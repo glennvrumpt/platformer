@@ -15,26 +15,33 @@ class Engine {
     this.init();
   }
 
-  async init() {
+  init() {
     this.canvas = document.createElement("canvas");
     this.canvas.width = 1280;
     this.canvas.height = 720;
     document.body.appendChild(this.canvas);
     this.context = this.canvas.getContext("2d");
 
-    await this.loadAssets();
+    this.loadAssets();
 
     this.changeScene("play", new PlayScene(this));
 
     this.run();
   }
 
-  async loadAssets() {
-    await this.loadTextures();
+  loadAssets() {
+    this.loadTextures();
   }
 
-  async loadTextures() {
-    this.assetManager.addTexture("player", "path/to/player.png");
+  loadTextures() {
+    this.assetManager.addTexture(
+      "player_idle",
+      "../src/assets/images/Characters/Player/spritesheets/player-idle.png"
+    );
+    this.assetManager.addTexture(
+      "player_run",
+      "../src/assets/images/Characters/Player/spritesheets/player-run.png"
+    );
   }
 
   getCurrentScene() {

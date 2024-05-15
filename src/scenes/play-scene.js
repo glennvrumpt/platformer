@@ -1,7 +1,12 @@
 import Scene from "./scene.js";
 import EntityManager from "../core/entity-manager.js";
+import RenderSystem from "../systems/render-system.js";
 import AnimationSystem from "../systems/animation-system.js";
-import RenderSystem from "../systems/render-system.jsjs";
+import Entity from "../core/entity.js";
+import TransformComponent from "../components/transform-component.js";
+import SizeComponent from "../components/size-component.js";
+import AnimationComponent from "../components/animation-component.js";
+import Vector2 from "../utilities/vector2.js";
 
 class PlayScene extends Scene {
   constructor(engine) {
@@ -25,25 +30,28 @@ class PlayScene extends Scene {
     this.animationSystem = new AnimationSystem(this.entityManager);
 
     const player = new Entity();
+    player.addComponent(new TransformComponent(new Vector2(300, 300)));
+    player.addComponent(new SizeComponent(128, 128));
     const playerAnimationComponent = new AnimationComponent();
     const idleAnimation = {
-      spritesheet: "player_idle_spritesheet.png",
-      frameCount: 5,
-      frameDuration: 100,
+      spritesheet: this.engine.assetManager.getTexture("player_idle"),
+      frameCount: 6,
+      frameDuration: 200,
       loop: true,
     };
     const runningAnimation = {
-      spritesheet: "player_running_spritesheet.png",
-      frameCount: 5,
-      frameDuration: 80,
+      spritesheet: this.engine.assetManager.getTexture("player_run"),
+      frameCount: 6,
+      frameDuration: 100,
       loop: true,
     };
     playerAnimationComponent.animations.set("idle", idleAnimation);
-    playerAnimationComponent.animations.set("running", runningAnimation);
+    playerAnimationComponent.animations.set("run", runningAnimation);
     playerAnimationComponent.currentAnimation = "idle";
     player.addComponent(playerAnimationComponent);
 
     this.entityManager.addEntity(player);
+    console.log(this.entityManager.entities);
   }
 
   doAction(action) {
@@ -62,14 +70,16 @@ class PlayScene extends Scene {
 
     if (actionType === "keydown") {
       if (actionCode === 87) {
-        console.log("Jump action released!");
+      } else if (actionCode === 65) {
+      } else if (actionCode === 68) {
       }
     }
   }
 
   update(deltaTime) {
-    this.animationSystem.update(this.entityManager.entities, deltaTime);
+    this.entityManager.update();
     this.renderSystem.update(this.entityManager.entities);
+    this.animationSystem.update(deltaTime, this.entityManager.entities);
   }
 
   onEnd() {}

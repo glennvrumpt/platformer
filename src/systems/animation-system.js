@@ -1,44 +1,34 @@
 import System from "../core/system.js";
 
 class AnimationSystem extends System {
-  constructor() {
+  constructor(entityManager) {
     super();
+    this.entityManager = entityManager;
   }
 
-  update(entities, deltaTime) {
-    entities.forEach((entity) => {
+  update(deltaTime) {
+    this.entityManager.entities.forEach((entity) => {
       const animationComponent = entity.getComponent("AnimationComponent");
       if (animationComponent) {
-        this.updateAnimation(entity, animationComponent, deltaTime);
+        const currentAnimation = animationComponent.currentAnimation;
+        const animationData =
+          animationComponent.animations.get(currentAnimation);
+
+        if (currentAnimation && animationData) {
+          const frameCount = animationData.frameCount;
+          const frameDuration = animationData.frameDuration;
+          const loop = animationData.loop;
+
+          animationComponent.elapsedTime += deltaTime;
+
+          const frameIndex =
+            Math.floor(animationComponent.elapsedTime / frameDuration) %
+            frameCount;
+
+          animationComponent.currentFrame = frameIndex;
+        }
       }
     });
-  }
-
-  updateAnimation(entity, animationComponent, deltaTime) {
-    const currentAnimation = animationComponent.animations.get(
-      animationComponent.currentAnimation
-    );
-    if (!currentAnimation) return;
-
-    const frameDuration = currentAnimation.frameDuration;
-    const frameCount = currentAnimation.frameCount;
-    const totalDuration = frameDuration * frameCount;
-
-    animationComponent.elapsedTime += deltaTime;
-
-    if (
-      animationComponent.elapsedTime > totalDuration &&
-      currentAnimation.loop
-    ) {
-      animationComponent.elapsedTime %= totalDuration;
-    }
-
-    const currentFrameIndex = Math.floor(
-      animationComponent.elapsedTime / frameDuration
-    );
-    const currentFrame = currentAnimation.spritesheet[currentFrameIndex];
-
-    animationComponent.currentFrame = currentFrame;
   }
 }
 
