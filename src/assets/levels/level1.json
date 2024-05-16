@@ -1,0 +1,35 @@
+{
+  "entities": [
+    {
+      "type": "player",
+      "transform": { "x": 100, "y": 150, "rotation": 0 },
+      "size": { "width": 64, "height": 64 },
+      "animations": {
+        "idle": {
+          "texture": "player_idle",
+          "frameCount": 6,
+          "frameDuration": 200,
+          "loop": true
+        },
+        "run": {
+          "texture": "player_run",
+          "frameCount": 8,
+          "frameDuration": 100,
+          "loop": true
+        },
+        "jump": {
+          "texture": "player_jump",
+          "frameCount": 5,
+          "frameDuration": 120,
+          "loop": false
+        },
+        "shoot": {
+          "texture": "player_shoot",
+          "frameCount": 4,
+          "frameDuration": 150,
+          "loop": false
+        }
+      }
+    }
+  ]
+}

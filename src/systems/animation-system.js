@@ -17,13 +17,17 @@ class AnimationSystem extends System {
         if (currentAnimation && animationData) {
           const frameCount = animationData.frameCount;
           const frameDuration = animationData.frameDuration;
-          const loop = animationData.loop;
 
           animationComponent.elapsedTime += deltaTime;
 
           const frameIndex =
-            Math.floor(animationComponent.elapsedTime / frameDuration) %
-            frameCount;
+            Math.floor(
+              animationComponent.elapsedTime / (frameDuration / 1000)
+            ) % frameCount;
+
+          if (frameIndex < 0) {
+            frameIndex += frameCount;
+          }
 
           animationComponent.currentFrame = frameIndex;
         }

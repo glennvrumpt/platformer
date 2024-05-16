@@ -2,56 +2,32 @@ import Scene from "./scene.js";
 import EntityManager from "../core/entity-manager.js";
 import RenderSystem from "../systems/render-system.js";
 import AnimationSystem from "../systems/animation-system.js";
-import Entity from "../core/entity.js";
-import TransformComponent from "../components/transform-component.js";
-import SizeComponent from "../components/size-component.js";
-import AnimationComponent from "../components/animation-component.js";
-import Vector2 from "../utilities/vector2.js";
+import LevelLoader from "../utilities/level-loader.js";
 
 class PlayScene extends Scene {
   constructor(engine) {
     super(engine);
+    this.entityManager = new EntityManager();
+    this.renderSystem = new RenderSystem(this.engine.canvas);
+    this.animationSystem = new AnimationSystem(this.entityManager);
+    this.levelLoader = new LevelLoader(this.engine);
     this.init();
   }
 
-  init() {
+  async init() {
     this.actionMap.set(87, "jump");
     this.actionMap.set(65, "moveLeft");
     this.actionMap.set(68, "moveRight");
     this.actionMap.set(32, "shoot");
 
-    this.loadLevel();
-  }
-
-  loadLevel() {
-    this.entityManager = new EntityManager();
-
-    this.renderSystem = new RenderSystem(this.engine.canvas);
-    this.animationSystem = new AnimationSystem(this.entityManager);
-
-    const player = new Entity();
-    player.addComponent(new TransformComponent(new Vector2(300, 300)));
-    player.addComponent(new SizeComponent(128, 128));
-    const playerAnimationComponent = new AnimationComponent();
-    const idleAnimation = {
-      spritesheet: this.engine.assetManager.getTexture("player_idle"),
-      frameCount: 6,
-      frameDuration: 200,
-      loop: true,
-    };
-    const runningAnimation = {
-      spritesheet: this.engine.assetManager.getTexture("player_run"),
-      frameCount: 6,
-      frameDuration: 100,
-      loop: true,
-    };
-    playerAnimationComponent.animations.set("idle", idleAnimation);
-    playerAnimationComponent.animations.set("run", runningAnimation);
-    playerAnimationComponent.currentAnimation = "idle";
-    player.addComponent(playerAnimationComponent);
-
-    this.entityManager.addEntity(player);
-    console.log(this.entityManager.entities);
+    try {
+      const entities = await this.levelLoader.loadLevel(
+        "../src/assets/levels/level1.json"
+      );
+      entities.forEach((entity) => this.entityManager.addEntity(entity));
+    } catch (error) {
+      console.error("Failed to load level:", error);
+    }
   }
 
   doAction(action) {
@@ -79,7 +55,7 @@ class PlayScene extends Scene {
   update(deltaTime) {
     this.entityManager.update();
     this.renderSystem.update(this.entityManager.entities);
-    this.animationSystem.update(deltaTime, this.entityManager.entities);
+    this.animationSystem.update(deltaTime);
   }
 
   onEnd() {}

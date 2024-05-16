@@ -1,32 +1,33 @@
 import InputSystem from "../systems/input-system.js";
 import PlayScene from "../scenes/play-scene.js";
-import Asset from "./asset.js";
+import AssetManager from "./asset-manager.js";
+import SceneManager from "./scene-manager.js";
 import Action from "./action.js";
 
 class Engine {
   constructor() {
+    this.canvas = null;
     this.context = null;
-    this.scenes = new Map();
-    this.currentScene = null;
     this.running = false;
     this.lastFrameTime = 0;
     this.inputSystem = new InputSystem(this);
-    this.assetManager = new Asset();
-    this.init();
+    this.assetManager = new AssetManager();
+    this.sceneManager = new SceneManager(this);
   }
 
   init() {
+    this.createCanvas();
+    this.context = this.canvas.getContext("2d");
+    this.loadAssets();
+    this.sceneManager.changeScene("play", new PlayScene(this));
+    this.run();
+  }
+
+  createCanvas() {
     this.canvas = document.createElement("canvas");
     this.canvas.width = 1280;
     this.canvas.height = 720;
-    document.body.appendChild(this.canvas);
-    this.context = this.canvas.getContext("2d");
-
-    this.loadAssets();
-
-    this.changeScene("play", new PlayScene(this));
-
-    this.run();
+    document.body.append(this.canvas);
   }
 
   loadAssets() {
@@ -44,21 +45,17 @@ class Engine {
     );
   }
 
-  getCurrentScene() {
-    return this.scenes.get(this.currentScene);
-  }
-
   run() {
     this.running = true;
     this.update(performance.now());
   }
 
   update(currentTime) {
-    const deltaTime = currentTime - this.lastFrameTime;
+    const deltaTime = (currentTime - this.lastFrameTime) / 1000;
     this.lastFrameTime = currentTime;
 
     if (this.running) {
-      const scene = this.scenes.get(this.currentScene);
+      const scene = this.sceneManager.getCurrentScene();
       if (scene) {
         scene.update(deltaTime);
       }
@@ -69,11 +66,6 @@ class Engine {
 
   stop() {
     this.running = false;
-  }
-
-  changeScene(name, scene) {
-    this.currentScene = name;
-    this.scenes.set(name, scene);
   }
 }
 

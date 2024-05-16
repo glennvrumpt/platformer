@@ -1,10 +1,11 @@
 import Component from "../core/component.js";
 
 class AnimationComponent extends Component {
-  constructor(animations = new Map(), currentAnimation = null) {
+  constructor() {
     super();
-    this.animations = animations;
-    this.currentAnimation = currentAnimation;
+    this.animations = new Map();
+    this.currentAnimation = null;
+    this.currentFrame = 0;
     this.elapsedTime = 0;
   }
 }

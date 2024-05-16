@@ -1,4 +1,4 @@
-class Asset {
+class AssetManager {
   constructor() {
     this.textures = new Map();
     this.sounds = new Map();
@@ -29,4 +29,4 @@ class Asset {
   getAnimation(name) {}
 }
 
-export default Asset;
+export default AssetManager;
