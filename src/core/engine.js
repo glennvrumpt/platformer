@@ -2,7 +2,6 @@ import InputSystem from "../systems/input-system.js";
 import PlayScene from "../scenes/play-scene.js";
 import AssetManager from "./asset-manager.js";
 import SceneManager from "./scene-manager.js";
-import Action from "./action.js";
 
 class Engine {
   constructor() {

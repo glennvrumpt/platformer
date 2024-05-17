@@ -71,8 +71,9 @@ class LevelLoader {
     }
 
     if (data.transform) {
-      const { x, y, rotation } = data.transform;
-      entity.addComponent(new Transform({ x, y }, rotation));
+      const { position, rotation } = data.transform;
+      const { x, y } = position;
+      entity.addComponent(new Transform(new Vector2(x, y), rotation));
     }
 
     if (data.size) {
