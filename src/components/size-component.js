@@ -1,6 +1,6 @@
 import Component from "../core/component.js";
 
-class Size extends Component {
+class SizeComponent extends Component {
   constructor(width, height) {
     super();
     this.width = width;
@@ -8,4 +8,4 @@ class Size extends Component {
   }
 }
 
-export default Size;
+export default SizeComponent;

@@ -43,6 +43,18 @@ class Engine {
       "player_run",
       "../src/assets/images/Characters/Player/spritesheets/player-run.png"
     );
+    this.assetManager.addTexture(
+      "tileset",
+      "../src/assets/images/Environment/Layers/tileset.png"
+    );
+    this.assetManager.addTexture(
+      "background",
+      "../src/assets/images/Environment/Layers/back.png"
+    );
+    this.assetManager.addTexture(
+      "far",
+      "../src/assets/images/Environment/Layers/far.png"
+    );
   }
 
   run() {

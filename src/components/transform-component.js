@@ -1,7 +1,7 @@
 import Component from "../core/component.js";
 import Vector2 from "../utilities/vector2.js";
 
-class Transform extends Component {
+class TransformComponent extends Component {
   constructor(
     position = new Vector2(0, 0),
     velocity = new Vector2(0, 0),
@@ -16,4 +16,4 @@ class Transform extends Component {
   }
 }
 
-export default Transform;
+export default TransformComponent;
