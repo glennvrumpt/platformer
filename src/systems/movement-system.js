@@ -17,29 +17,34 @@ class MovementSystem extends System {
 
       if (!inputComponent || !transformComponent) return;
 
+      const jumpSpeed = 800;
       const speed = 200;
-      const velocity = new Vector2(0, 0);
+      const velocity = transformComponent.velocity;
 
       if (gravityComponent) {
         velocity.y += gravityComponent.force;
       }
 
-      if (inputComponent.up) {
-        velocity.y -= speed;
-      }
-      if (inputComponent.down) {
-        velocity.y += speed;
-      }
       if (inputComponent.left) {
-        velocity.x -= speed;
+        velocity.x = -speed;
       }
       if (inputComponent.right) {
-        velocity.x += speed;
+        velocity.x = speed;
+      }
+
+      if (
+        inputComponent.up &&
+        gravityComponent &&
+        gravityComponent.force === 0
+      ) {
+        velocity.y = -jumpSpeed;
       }
 
       transformComponent.position = transformComponent.position.add(
         velocity.multiply(deltaTime)
       );
+
+      velocity.x = 0;
     });
   }
 }

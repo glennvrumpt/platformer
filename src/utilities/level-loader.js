@@ -76,7 +76,6 @@ class LevelLoader {
       const pos = new Vector2(position.x, position.y);
       const vel = new Vector2(velocity.x, velocity.y);
       const scl = new Vector2(scale.x, scale.y);
-      console.log(scl);
       entity.addComponent(new TransformComponent(pos, vel, scl, rotation));
     }
 

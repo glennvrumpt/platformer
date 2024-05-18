@@ -43,6 +43,10 @@ class Engine {
       "../src/assets/images/Characters/Player/spritesheets/player-run.png"
     );
     this.assetManager.addTexture(
+      "player_jump",
+      "../src/assets/images/Characters/Player/spritesheets/player-jump.png"
+    );
+    this.assetManager.addTexture(
       "tileset",
       "../src/assets/images/Environment/Layers/tileset.png"
     );

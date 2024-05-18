@@ -73,7 +73,7 @@
       },
       "size": { "width": 64, "height": 64 },
       "boundingBox": { "offsetX": 0, "offsetY": 0, "width": 64, "height": 64 },
-      "gravity": { "force": 400 },
+      "gravity": { "force": 9.8 },
       "animations": {
         "idle": {
           "texture": "player_idle",

@@ -9,30 +9,75 @@ class AnimationSystem extends System {
   update(deltaTime) {
     this.entityManager.entities.forEach((entity) => {
       const animationComponent = entity.getComponent("AnimationComponent");
-      if (animationComponent) {
-        const currentAnimation = animationComponent.currentAnimation;
-        const animationData =
-          animationComponent.animations.get(currentAnimation);
+      const inputComponent = entity.getComponent("InputComponent");
+      const transformComponent = entity.getComponent("TransformComponent");
+      const gravityComponent = entity.getComponent("GravityComponent");
 
-        if (currentAnimation && animationData) {
-          const frameCount = animationData.frameCount;
-          const frameDuration = animationData.frameDuration;
-
-          animationComponent.elapsedTime += deltaTime;
-
-          const frameIndex =
-            Math.floor(
-              animationComponent.elapsedTime / (frameDuration / 1000)
-            ) % frameCount;
-
-          if (frameIndex < 0) {
-            frameIndex += frameCount;
-          }
-
-          animationComponent.currentFrame = frameIndex;
-        }
+      if (
+        animationComponent &&
+        inputComponent &&
+        transformComponent &&
+        gravityComponent
+      ) {
+        this.updateAnimation(
+          entity,
+          animationComponent,
+          inputComponent,
+          transformComponent,
+          gravityComponent,
+          deltaTime
+        );
       }
     });
+  }
+
+  updateAnimation(
+    entity,
+    animationComponent,
+    inputComponent,
+    transformComponent,
+    gravityComponent,
+    deltaTime
+  ) {
+    let newAnimation = null;
+
+    if (transformComponent.velocity.y !== 0) {
+      newAnimation = "jump";
+    } else if (inputComponent.left || inputComponent.right) {
+      newAnimation = "run";
+    } else {
+      newAnimation = "idle";
+    }
+
+    if (newAnimation !== animationComponent.currentAnimation) {
+      animationComponent.currentAnimation = newAnimation;
+      animationComponent.currentFrame = 0;
+      animationComponent.elapsedTime = 0;
+    }
+
+    const animationData = animationComponent.animations.get(
+      animationComponent.currentAnimation
+    );
+    if (animationData) {
+      animationComponent.elapsedTime += deltaTime;
+
+      if (animationComponent.currentAnimation === "jump") {
+        if (transformComponent.velocity.y < 0) {
+          animationComponent.currentFrame = 0;
+        } else if (transformComponent.velocity.y > 0) {
+          animationComponent.currentFrame = 1;
+        }
+      } else {
+        const frameDuration = animationData.frameDuration / 1000;
+        const frameCount = animationData.frameCount;
+
+        if (animationComponent.elapsedTime >= frameDuration) {
+          animationComponent.elapsedTime -= frameDuration;
+          animationComponent.currentFrame =
+            (animationComponent.currentFrame + 1) % frameCount;
+        }
+      }
+    }
   }
 }
 

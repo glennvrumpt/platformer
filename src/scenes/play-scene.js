@@ -42,7 +42,6 @@ class PlayScene extends Scene {
     } catch (error) {
       console.error("Failed to load level:", error);
     }
-    console.log(this.entityManager.entities);
   }
 
   doAction(action) {
