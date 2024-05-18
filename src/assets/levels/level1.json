@@ -65,9 +65,15 @@
   "entities": [
     {
       "type": "player",
-      "transform": { "position": { "x": 90, "y": 500 }, "rotation": 0 },
+      "transform": {
+        "position": { "x": 90, "y": 500 },
+        "velocity": { "x": 0, "y": 0 },
+        "scale": { "x": 1, "y": 1 },
+        "rotation": 0
+      },
       "size": { "width": 64, "height": 64 },
       "boundingBox": { "offsetX": 0, "offsetY": 0, "width": 64, "height": 64 },
+      "gravity": { "force": 400 },
       "animations": {
         "idle": {
           "texture": "player_idle",

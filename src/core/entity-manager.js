@@ -1,3 +1,5 @@
+import Vector2 from "../utilities/vector2.js";
+
 class EntityManager {
   constructor() {
     this.entities = new Map();
@@ -41,8 +43,33 @@ class EntityManager {
     return this.taggedEntities.get(tag) || new Map();
   }
 
+  getEntityByTag(tag) {
+    const entities = this.getEntitiesByTag(tag);
+    if (entities.size > 0) {
+      return entities.values().next().value;
+    }
+    return null;
+  }
+
   getEntityById(id) {
     return this.entities.get(id);
+  }
+
+  getEntitiesInRadius(position, radius) {
+    const result = [];
+    this.entities.forEach((entity) => {
+      const transform = entity.getComponent("TransformComponent");
+      if (transform) {
+        const entityPosition = new Vector2(
+          transform.position.x,
+          transform.position.y
+        );
+        if (Vector2.distance(position, entityPosition) <= radius) {
+          result.push(entity);
+        }
+      }
+    });
+    return result;
   }
 }
 

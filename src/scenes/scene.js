@@ -10,6 +10,8 @@ class Scene {
     this.hasEnded = false;
   }
 
+  init() {}
+
   update(deltaTime) {}
 
   render(context) {}

@@ -3,20 +3,16 @@ import EntityManager from "../core/entity-manager.js";
 import RenderSystem from "../systems/render-system.js";
 import AnimationSystem from "../systems/animation-system.js";
 import CollisionSystem from "../systems/collision-system.js";
+import MovementSystem from "../systems/movement-system.js";
+import PlayInputSystem from "../systems/play-input-system.js";
 import LevelLoader from "../utilities/level-loader.js";
 
 class PlayScene extends Scene {
   constructor(engine) {
     super(engine);
     this.entityManager = new EntityManager();
-    this.renderSystem = new RenderSystem(
-      this.engine.canvas,
-      this.engine.assetManager
-    );
-    this.animationSystem = new AnimationSystem(this.entityManager);
-    this.collisionSystem = new CollisionSystem(this.entityManager);
     this.levelLoader = new LevelLoader(this.engine);
-    this.init();
+    this.systemsInitialized = false;
   }
 
   async init() {
@@ -30,38 +26,38 @@ class PlayScene extends Scene {
         "../src/assets/levels/level1.json"
       );
       entities.forEach((entity) => this.entityManager.addEntity(entity));
+
+      this.renderSystem = new RenderSystem(
+        this.engine.canvas,
+        this.engine.assetManager
+      );
+      this.animationSystem = new AnimationSystem(this.entityManager);
+      this.collisionSystem = new CollisionSystem(this.entityManager);
+      this.movementSystem = new MovementSystem(this.entityManager);
+      this.playInputSystem = new PlayInputSystem(this.entityManager);
+
+      this.entityManager.update();
+
+      this.systemsInitialized = true;
     } catch (error) {
       console.error("Failed to load level:", error);
     }
+    console.log(this.entityManager.entities);
   }
 
   doAction(action) {
-    const actionCode = action.code;
-    const actionType = action.type;
-
-    if (actionType === "keydown") {
-      if (actionCode === 87) {
-        console.log("Jump action triggered!");
-      } else if (actionCode === 65) {
-        console.log("Move left action triggered!");
-      } else if (actionCode === 68) {
-        console.log("Move right action triggered!");
-      }
-    }
-
-    if (actionType === "keydown") {
-      if (actionCode === 87) {
-      } else if (actionCode === 65) {
-      } else if (actionCode === 68) {
-      }
-    }
+    this.playInputSystem.handleAction(action);
   }
 
   update(deltaTime) {
     this.entityManager.update();
-    this.renderSystem.update(this.entityManager.entities);
-    this.animationSystem.update(deltaTime);
-    this.collisionSystem.update();
+
+    if (this.systemsInitialized) {
+      this.renderSystem.update(this.entityManager.entities);
+      this.animationSystem.update(deltaTime);
+      this.collisionSystem.update();
+      this.movementSystem.update(deltaTime);
+    }
   }
 
   onEnd() {}

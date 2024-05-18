@@ -14,6 +14,10 @@ class Entity {
     return this.components.get(componentClass);
   }
 
+  hasComponent(componentClass) {
+    return this.components.has(componentClass);
+  }
+
   addTag(tag) {
     this.tags.add(tag);
   }

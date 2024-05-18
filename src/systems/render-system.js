@@ -7,6 +7,8 @@ class RenderSystem extends System {
     this.ctx = canvas.getContext("2d");
     this.ctx.imageSmoothingEnabled = false;
     this.assetManager = assetManager;
+    this.backgroundTexture = this.assetManager.getTexture("background");
+    this.farTexture = this.assetManager.getTexture("far");
   }
 
   update(entities) {
@@ -14,11 +16,8 @@ class RenderSystem extends System {
     this.ctx.fillStyle = "#2c3968";
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-    const background = this.assetManager.getTexture("background");
-    this.ctx.drawImage(background, 0, 0, 1280, 720);
-
-    const far = this.assetManager.getTexture("far");
-    this.ctx.drawImage(far, 0, 50, 1280, 720);
+    this.ctx.drawImage(this.backgroundTexture, 0, 0, 1280, 720);
+    this.ctx.drawImage(this.farTexture, 0, 50, 1280, 720);
 
     entities.forEach((entity) => {
       const tileComponent = entity.getComponent("TileComponent");

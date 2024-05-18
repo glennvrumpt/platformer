@@ -12,7 +12,7 @@ class InputSystem extends System {
   update() {}
 
   handleInput(event, type) {
-    const scene = this.engine.getCurrentScene();
+    const scene = this.engine.sceneManager.getCurrentScene();
     if (!scene) return;
     const actionValue = scene.getAction(event.keyCode);
 

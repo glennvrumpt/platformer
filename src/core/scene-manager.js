@@ -11,11 +11,8 @@ class SceneManager {
 
   changeScene(name, scene) {
     this.currentScene = name;
-    if (this.scenes.has(name)) {
-      this.scenes.get(name);
-    } else {
-      this.scenes.set(name, scene);
-    }
+    this.scenes.set(name, scene);
+    this.scenes.get(name).init();
   }
 
   getCurrentScene() {

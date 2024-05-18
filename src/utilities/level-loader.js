@@ -1,10 +1,12 @@
 import { loadJSON } from "./loader.js";
 import Entity from "../core/entity.js";
-import Transform from "../components/transform-component.js";
+import TransformComponent from "../components/transform-component.js";
 import Size from "../components/size-component.js";
 import BoundingBoxComponent from "../components/bounding-box-component.js";
+import GravityComponent from "../components/gravity-component.js";
 import AnimationComponent from "../components/animation-component.js";
 import TileComponent from "../components/tile-component.js";
+import InputComponent from "../components/input-component.js";
 import Vector2 from "./vector2.js";
 
 class LevelLoader {
@@ -46,7 +48,9 @@ class LevelLoader {
           const tileY = Math.floor(tile / (tileset.width / tileSize));
           const entity = new Entity();
           entity.addComponent(
-            new Transform(new Vector2(x * scaledTileSize, y * scaledTileSize))
+            new TransformComponent(
+              new Vector2(x * scaledTileSize, y * scaledTileSize)
+            )
           );
           entity.addComponent(new Size(scaledTileSize, scaledTileSize));
           entity.addComponent(
@@ -55,6 +59,7 @@ class LevelLoader {
           entity.addComponent(
             new BoundingBoxComponent(0, 0, scaledTileSize, scaledTileSize)
           );
+          entity.addTag("tile");
           tileEntities.push(entity);
         }
       });
@@ -66,14 +71,13 @@ class LevelLoader {
   createEntity(data) {
     const entity = new Entity();
 
-    if (data.type) {
-      entity.addTag(data.type);
-    }
-
     if (data.transform) {
-      const { position, rotation } = data.transform;
-      const { x, y } = position;
-      entity.addComponent(new Transform(new Vector2(x, y), rotation));
+      const { position, velocity, scale, rotation } = data.transform;
+      const pos = new Vector2(position.x, position.y);
+      const vel = new Vector2(velocity.x, velocity.y);
+      const scl = new Vector2(scale.x, scale.y);
+      console.log(scl);
+      entity.addComponent(new TransformComponent(pos, vel, scl, rotation));
     }
 
     if (data.size) {
@@ -86,6 +90,10 @@ class LevelLoader {
       entity.addComponent(
         new BoundingBoxComponent(offsetX, offsetY, width, height)
       );
+    }
+
+    if (data.gravity) {
+      entity.addComponent(new GravityComponent(data.gravity.force));
     }
 
     if (data.animations) {
@@ -103,6 +111,14 @@ class LevelLoader {
       }
       animationComponent.currentAnimation = Object.keys(data.animations)[0];
       entity.addComponent(animationComponent);
+    }
+
+    if (data.type) {
+      entity.addTag(data.type);
+    }
+
+    if (data.type === "player") {
+      entity.addComponent(new InputComponent());
     }
 
     return entity;
