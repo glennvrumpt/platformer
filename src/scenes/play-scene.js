@@ -13,6 +13,7 @@ class PlayScene extends Scene {
     this.entityManager = new EntityManager();
     this.levelLoader = new LevelLoader(this.engine);
     this.systemsInitialized = false;
+    this.showBoundingBoxes = false;
   }
 
   async init() {
@@ -20,6 +21,7 @@ class PlayScene extends Scene {
     this.actionMap.set(65, "left");
     this.actionMap.set(68, "right");
     this.actionMap.set(32, "shoot");
+    this.actionMap.set(67, "toggleBoundingBoxes");
 
     try {
       const entities = await this.levelLoader.loadLevel(
@@ -29,12 +31,13 @@ class PlayScene extends Scene {
 
       this.renderSystem = new RenderSystem(
         this.engine.canvas,
-        this.engine.assetManager
+        this.engine.assetManager,
+        () => this.showBoundingBoxes
       );
       this.animationSystem = new AnimationSystem(this.entityManager);
       this.collisionSystem = new CollisionSystem(this.entityManager);
       this.movementSystem = new MovementSystem(this.entityManager);
-      this.playInputSystem = new PlayInputSystem(this.entityManager);
+      this.playInputSystem = new PlayInputSystem(this.entityManager, this);
 
       this.entityManager.update();
 

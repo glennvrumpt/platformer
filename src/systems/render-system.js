@@ -1,7 +1,7 @@
 import System from "../core/system.js";
 
 class RenderSystem extends System {
-  constructor(canvas, assetManager) {
+  constructor(canvas, assetManager, showBoundingBoxesCallback) {
     super();
     this.canvas = canvas;
     this.ctx = canvas.getContext("2d");
@@ -9,6 +9,7 @@ class RenderSystem extends System {
     this.assetManager = assetManager;
     this.backgroundTexture = this.assetManager.getTexture("background");
     this.farTexture = this.assetManager.getTexture("far");
+    this.showBoundingBoxes = showBoundingBoxesCallback;
   }
 
   update(entities) {
@@ -24,6 +25,7 @@ class RenderSystem extends System {
       const animationComponent = entity.getComponent("AnimationComponent");
       const transformComponent = entity.getComponent("TransformComponent");
       const sizeComponent = entity.getComponent("SizeComponent");
+      const boundingBoxComponent = entity.getComponent("BoundingBoxComponent");
 
       this.ctx.save();
       this.ctx.translate(
@@ -41,6 +43,10 @@ class RenderSystem extends System {
       }
 
       this.ctx.restore();
+
+      if (this.showBoundingBoxes() && boundingBoxComponent) {
+        this.renderBoundingBox(transformComponent, boundingBoxComponent);
+      }
     });
   }
 
@@ -83,6 +89,21 @@ class RenderSystem extends System {
         sizeComponent.height
       );
     }
+  }
+
+  renderBoundingBox(transformComponent, boundingBoxComponent) {
+    const { offsetX, offsetY, width, height } = boundingBoxComponent;
+
+    this.ctx.save();
+    this.ctx.strokeStyle = "#ffffff";
+    this.ctx.lineWidth = 2;
+    this.ctx.strokeRect(
+      transformComponent.position.x + offsetX,
+      transformComponent.position.y + offsetY,
+      width,
+      height
+    );
+    this.ctx.restore();
   }
 }
 

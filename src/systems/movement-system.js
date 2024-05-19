@@ -17,7 +17,7 @@ class MovementSystem extends System {
 
       if (!inputComponent || !transformComponent) return;
 
-      const jumpSpeed = 800;
+      const jumpSpeed = 700;
       const speed = 200;
       const velocity = transformComponent.velocity;
 

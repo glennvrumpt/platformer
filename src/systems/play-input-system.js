@@ -1,9 +1,10 @@
 import System from "../core/system.js";
 
 class PlayInputSystem extends System {
-  constructor(entityManager) {
+  constructor(entityManager, playScene) {
     super();
     this.entityManager = entityManager;
+    this.playScene = playScene;
   }
 
   handleAction(action) {
@@ -31,6 +32,8 @@ class PlayInputSystem extends System {
         inputComponent.right = true;
       } else if (actionCode === 32) {
         inputComponent.shoot = true;
+      } else if (actionCode === 67) {
+        this.playScene.showBoundingBoxes = !this.playScene.showBoundingBoxes;
       }
     } else if (actionType === "keyup") {
       if (actionCode === 87) {
