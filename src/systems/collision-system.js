@@ -1,4 +1,5 @@
 import System from "../core/system.js";
+import Vector2 from "../utilities/vector2.js";
 
 class CollisionSystem extends System {
   constructor(entityManager) {
@@ -7,8 +8,6 @@ class CollisionSystem extends System {
   }
 
   update() {
-    const entities = this.entityManager.entities;
-
     const player = this.entityManager.getEntityByTag("player");
     if (!player) return;
 
@@ -20,7 +19,12 @@ class CollisionSystem extends System {
 
     let onGround = false;
 
-    entities.forEach((entity) => {
+    const entitiesInRadius = this.entityManager.getEntitiesInRadius(
+      playerTransform.position,
+      100
+    );
+
+    entitiesInRadius.forEach((entity) => {
       if (entity.hasTag("tile")) {
         const tileTransform = entity.getComponent("TransformComponent");
         const tileBoundingBox = entity.getComponent("BoundingBoxComponent");
