@@ -1,4 +1,7 @@
 import System from "../core/system.js";
+import InputComponent from "../components/input-component.js";
+import TransformComponent from "../components/transform-component.js";
+import GravityComponent from "../components/gravity-component.js";
 import Vector2 from "../utilities/vector2.js";
 
 class MovementSystem extends System {
@@ -11,9 +14,9 @@ class MovementSystem extends System {
     const entities = this.entityManager.entities;
 
     entities.forEach((entity) => {
-      const inputComponent = entity.getComponent("InputComponent");
-      const transformComponent = entity.getComponent("TransformComponent");
-      const gravityComponent = entity.getComponent("GravityComponent");
+      const inputComponent = entity.getComponent(InputComponent);
+      const transformComponent = entity.getComponent(TransformComponent);
+      const gravityComponent = entity.getComponent(GravityComponent);
 
       if (!inputComponent || !transformComponent) return;
 

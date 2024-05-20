@@ -7,6 +7,7 @@ import GravityComponent from "../components/gravity-component.js";
 import AnimationComponent from "../components/animation-component.js";
 import TileComponent from "../components/tile-component.js";
 import InputComponent from "../components/input-component.js";
+import StateComponent from "../components/state-component.js";
 import Vector2 from "./vector2.js";
 
 class LevelLoader {
@@ -118,6 +119,7 @@ class LevelLoader {
 
     if (data.type === "player") {
       entity.addComponent(new InputComponent());
+      entity.addComponent(new StateComponent("idle"));
     }
 
     return entity;

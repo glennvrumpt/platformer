@@ -7,7 +7,7 @@ class Entity {
   }
 
   addComponent(component) {
-    this.components.set(component.constructor.name, component);
+    this.components.set(component.constructor, component);
   }
 
   getComponent(componentClass) {

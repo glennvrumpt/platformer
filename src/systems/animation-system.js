@@ -1,4 +1,8 @@
 import System from "../core/system.js";
+import AnimationComponent from "../components/animation-component.js";
+import InputComponent from "../components/input-component.js";
+import TransformComponent from "../components/transform-component.js";
+import GravityComponent from "../components/gravity-component.js";
 
 class AnimationSystem extends System {
   constructor(entityManager) {
@@ -8,10 +12,10 @@ class AnimationSystem extends System {
 
   update(deltaTime) {
     this.entityManager.entities.forEach((entity) => {
-      const animationComponent = entity.getComponent("AnimationComponent");
-      const inputComponent = entity.getComponent("InputComponent");
-      const transformComponent = entity.getComponent("TransformComponent");
-      const gravityComponent = entity.getComponent("GravityComponent");
+      const animationComponent = entity.getComponent(AnimationComponent);
+      const inputComponent = entity.getComponent(InputComponent);
+      const transformComponent = entity.getComponent(TransformComponent);
+      const gravityComponent = entity.getComponent(GravityComponent);
 
       if (
         animationComponent &&

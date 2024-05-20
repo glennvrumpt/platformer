@@ -1,4 +1,5 @@
 import System from "../core/system.js";
+import InputComponent from "../components/input-component.js";
 
 class PlayInputSystem extends System {
   constructor(entityManager, playScene) {
@@ -17,7 +18,7 @@ class PlayInputSystem extends System {
       return;
     }
 
-    const inputComponent = player.getComponent("InputComponent");
+    const inputComponent = player.getComponent(InputComponent);
     if (!inputComponent) {
       console.error("InputComponent not found on player");
       return;

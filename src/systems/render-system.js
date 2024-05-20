@@ -1,4 +1,9 @@
 import System from "../core/system.js";
+import TileComponent from "../components/tile-component.js";
+import AnimationComponent from "../components/animation-component.js";
+import TransformComponent from "../components/transform-component.js";
+import SizeComponent from "../components/size-component.js";
+import BoundingBoxComponent from "../components/bounding-box-component.js";
 
 class RenderSystem extends System {
   constructor(canvas, assetManager, showBoundingBoxesCallback) {
@@ -21,11 +26,11 @@ class RenderSystem extends System {
     this.ctx.drawImage(this.farTexture, 0, 50, 1280, 720);
 
     entities.forEach((entity) => {
-      const tileComponent = entity.getComponent("TileComponent");
-      const animationComponent = entity.getComponent("AnimationComponent");
-      const transformComponent = entity.getComponent("TransformComponent");
-      const sizeComponent = entity.getComponent("SizeComponent");
-      const boundingBoxComponent = entity.getComponent("BoundingBoxComponent");
+      const tileComponent = entity.getComponent(TileComponent);
+      const animationComponent = entity.getComponent(AnimationComponent);
+      const transformComponent = entity.getComponent(TransformComponent);
+      const sizeComponent = entity.getComponent(SizeComponent);
+      const boundingBoxComponent = entity.getComponent(BoundingBoxComponent);
 
       this.ctx.save();
       this.ctx.translate(
