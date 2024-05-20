@@ -49,7 +49,6 @@ class CollisionSystem extends System {
           isOnGround = true;
         }
 
-        // Adjust player position and velocity based on collision normal
         if (collisionNormal.x !== 0) {
           playerVelocity.x = 0;
         }
@@ -59,7 +58,6 @@ class CollisionSystem extends System {
       }
     });
 
-    // Check if the player is standing on top of a tile
     const tileEntities = this.entityManager.getEntitiesByTag("tile");
     tileEntities.forEach((tileEntity) => {
       const tileTransform = tileEntity.getComponent(TransformComponent);
@@ -77,16 +75,13 @@ class CollisionSystem extends System {
       }
     });
 
-    // Adjust gravity based on whether the player is on the ground
     const gravityComponent = player.getComponent(GravityComponent);
     if (gravityComponent) {
-      gravityComponent.force = isOnGround ? 0 : 9.8; // Adjust the gravity force as needed
+      gravityComponent.force = isOnGround ? 0 : 9.8;
     }
 
-    // Update player state
     const stateComponent = player.getComponent(StateComponent);
     if (stateComponent) {
-      // Only switch to "fall" state if not colliding with anything below
       stateComponent.state = isOnGround ? "idle" : "fall";
     }
   }
@@ -133,21 +128,17 @@ class CollisionSystem extends System {
     if (Math.abs(dx) <= width && Math.abs(dy) <= height) {
       if (crossWidth > crossHeight) {
         if (crossWidth > -crossHeight) {
-          // Collision from top
           collisionNormal = { x: 0, y: 1 };
           transformA.position.y = by + bh - boundingBoxA.offsetY;
         } else {
-          // Collision from left
           collisionNormal = { x: -1, y: 0 };
           transformA.position.x = bx - aw - boundingBoxA.offsetX;
         }
       } else {
         if (crossWidth > -crossHeight) {
-          // Collision from right
           collisionNormal = { x: 1, y: 0 };
           transformA.position.x = bx + bw - boundingBoxA.offsetX;
         } else {
-          // Collision from bottom
           collisionNormal = { x: 0, y: -1 };
           transformA.position.y = by - ah - boundingBoxA.offsetY;
         }
