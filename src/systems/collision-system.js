@@ -23,7 +23,12 @@ class CollisionSystem extends System {
 
     let isOnGround = false;
 
-    entities.forEach((entity) => {
+    const entitiesInRadius = this.entityManager.getEntitiesInRadius(
+      playerTransform.position,
+      100
+    );
+
+    entitiesInRadius.forEach((entity) => {
       if (entity === player) return;
 
       const transform = entity.getComponent(TransformComponent);
@@ -58,8 +63,7 @@ class CollisionSystem extends System {
       }
     });
 
-    const tileEntities = this.entityManager.getEntitiesByTag("tile");
-    tileEntities.forEach((tileEntity) => {
+    entitiesInRadius.forEach((tileEntity) => {
       const tileTransform = tileEntity.getComponent(TransformComponent);
       const tileBoundingBox = tileEntity.getComponent(BoundingBoxComponent);
 

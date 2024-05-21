@@ -44,7 +44,11 @@ class RenderSystem extends System {
       }
 
       if (animationComponent) {
-        this.renderAnimation(animationComponent, sizeComponent);
+        this.renderAnimation(
+          animationComponent,
+          sizeComponent,
+          transformComponent
+        );
       }
 
       this.ctx.restore();
@@ -70,7 +74,7 @@ class RenderSystem extends System {
     );
   }
 
-  renderAnimation(animationComponent, sizeComponent) {
+  renderAnimation(animationComponent, sizeComponent, transformComponent) {
     const currentAnimation = animationComponent.currentAnimation;
     const animationData = animationComponent.animations.get(currentAnimation);
 
@@ -79,9 +83,13 @@ class RenderSystem extends System {
       const frameWidth = spritesheet.width / frameCount;
       const frameHeight = spritesheet.height;
       const currentFrame = animationComponent.currentFrame;
-
       const sourceX = currentFrame * frameWidth;
-
+      console.log(transformComponent.direction);
+      this.ctx.save();
+      if (transformComponent.direction === "left") {
+        this.ctx.scale(-1, 1);
+        this.ctx.translate(-sizeComponent.width, 0);
+      }
       this.ctx.drawImage(
         spritesheet,
         sourceX,
@@ -93,6 +101,7 @@ class RenderSystem extends System {
         sizeComponent.width,
         sizeComponent.height
       );
+      this.ctx.restore();
     }
   }
 

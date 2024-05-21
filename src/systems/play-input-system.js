@@ -1,5 +1,6 @@
 import System from "../core/system.js";
 import InputComponent from "../components/input-component.js";
+import TransformComponent from "../components/transform-component.js";
 
 class PlayInputSystem extends System {
   constructor(entityManager, playScene) {
@@ -24,13 +25,21 @@ class PlayInputSystem extends System {
       return;
     }
 
+    const transformComponent = player.getComponent(TransformComponent);
+    if (!transformComponent) {
+      console.error("TransformComponent not found on player");
+      return;
+    }
+
     if (actionType === "keydown") {
       if (actionCode === 87) {
         inputComponent.up = true;
       } else if (actionCode === 65) {
         inputComponent.left = true;
+        transformComponent.direction = "left";
       } else if (actionCode === 68) {
         inputComponent.right = true;
+        transformComponent.direction = "right";
       } else if (actionCode === 32) {
         inputComponent.shoot = true;
       } else if (actionCode === 67) {

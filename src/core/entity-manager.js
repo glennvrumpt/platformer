@@ -1,4 +1,5 @@
 import Vector2 from "../utilities/vector2.js";
+import TransformComponent from "../components/transform-component.js";
 
 class EntityManager {
   constructor() {
@@ -58,7 +59,7 @@ class EntityManager {
   getEntitiesInRadius(position, radius) {
     const result = [];
     this.entities.forEach((entity) => {
-      const transform = entity.getComponent("TransformComponent");
+      const transform = entity.getComponent(TransformComponent);
       if (transform) {
         const entityPosition = new Vector2(
           transform.position.x,
