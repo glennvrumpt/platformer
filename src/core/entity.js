@@ -2,7 +2,6 @@ class Entity {
   constructor() {
     this.id = Entity.generateId();
     this.components = new Map();
-    this.tags = new Set();
     this.active = true;
   }
 
@@ -16,18 +15,6 @@ class Entity {
 
   hasComponent(componentClass) {
     return this.components.has(componentClass);
-  }
-
-  addTag(tag) {
-    this.tags.add(tag);
-  }
-
-  removeTag(tag) {
-    this.tags.delete(tag);
-  }
-
-  hasTag(tag) {
-    return this.tags.has(tag);
   }
 
   static generateId() {

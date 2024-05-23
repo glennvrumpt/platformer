@@ -13,7 +13,7 @@ class PlayInputSystem extends System {
     const actionCode = action.code;
     const actionType = action.type;
 
-    const player = this.entityManager.getEntityByTag("player");
+    const player = this.entityManager.tagSystem.getEntityByTag("player");
     if (!player) {
       console.error("Player entity not found");
       return;

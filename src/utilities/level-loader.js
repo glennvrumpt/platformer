@@ -8,6 +8,7 @@ import AnimationComponent from "../components/animation-component.js";
 import TileComponent from "../components/tile-component.js";
 import InputComponent from "../components/input-component.js";
 import StateComponent from "../components/state-component.js";
+import TagComponent from "../components/tag-component.js";
 import Vector2 from "./vector2.js";
 
 class LevelLoader {
@@ -60,7 +61,9 @@ class LevelLoader {
           entity.addComponent(
             new BoundingBoxComponent(0, 0, scaledTileSize, scaledTileSize)
           );
-          entity.addTag("tile");
+          const tagComponent = new TagComponent();
+          tagComponent.tags.add("tile");
+          entity.addComponent(tagComponent);
           tileEntities.push(entity);
         }
       });
@@ -114,7 +117,9 @@ class LevelLoader {
     }
 
     if (data.type) {
-      entity.addTag(data.type);
+      const tagComponent = new TagComponent();
+      tagComponent.tags.add(data.type);
+      entity.addComponent(tagComponent);
     }
 
     if (data.type === "player") {

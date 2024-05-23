@@ -84,7 +84,7 @@ class RenderSystem extends System {
       const frameHeight = spritesheet.height;
       const currentFrame = animationComponent.currentFrame;
       const sourceX = currentFrame * frameWidth;
-      console.log(transformComponent.direction);
+
       this.ctx.save();
       if (transformComponent.direction === "left") {
         this.ctx.scale(-1, 1);

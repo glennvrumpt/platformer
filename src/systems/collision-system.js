@@ -13,7 +13,7 @@ class CollisionSystem extends System {
 
   update(deltaTime) {
     const entities = this.entityManager.entities;
-    const player = this.entityManager.getEntityByTag("player");
+    const player = this.entityManager.tagSystem.getEntityByTag("player");
 
     if (!player) return;
 
@@ -23,7 +23,7 @@ class CollisionSystem extends System {
 
     let isOnGround = false;
 
-    const entitiesInRadius = this.entityManager.getEntitiesInRadius(
+    const entitiesInRadius = this.getEntitiesInRadius(
       playerTransform.position,
       100
     );
@@ -88,6 +88,23 @@ class CollisionSystem extends System {
     if (stateComponent) {
       stateComponent.state = isOnGround ? "idle" : "fall";
     }
+  }
+
+  getEntitiesInRadius(position, radius) {
+    const result = [];
+    this.entityManager.entities.forEach((entity) => {
+      const transform = entity.getComponent(TransformComponent);
+      if (transform) {
+        const entityPosition = new Vector2(
+          transform.position.x,
+          transform.position.y
+        );
+        if (Vector2.distance(position, entityPosition) <= radius) {
+          result.push(entity);
+        }
+      }
+    });
+    return result;
   }
 
   isColliding(transformA, boundingBoxA, transformB, boundingBoxB) {
