@@ -26,33 +26,35 @@ class RenderSystem extends System {
     this.ctx.drawImage(this.farTexture, 0, 50, 1280, 720);
 
     entities.forEach((entity) => {
-      const tileComponent = entity.getComponent(TileComponent);
-      const animationComponent = entity.getComponent(AnimationComponent);
       const transformComponent = entity.getComponent(TransformComponent);
       const sizeComponent = entity.getComponent(SizeComponent);
-      const boundingBoxComponent = entity.getComponent(BoundingBoxComponent);
 
-      this.ctx.save();
-      this.ctx.translate(
-        transformComponent.position.x,
-        transformComponent.position.y
-      );
-      this.ctx.scale(transformComponent.scale.x, transformComponent.scale.y);
-
-      if (tileComponent) {
-        this.renderTile(tileComponent, sizeComponent);
-      }
-
-      if (animationComponent) {
-        this.renderAnimation(
-          animationComponent,
-          sizeComponent,
-          transformComponent
+      if (transformComponent && sizeComponent) {
+        this.ctx.save();
+        this.ctx.translate(
+          transformComponent.position.x,
+          transformComponent.position.y
         );
+        this.ctx.scale(transformComponent.scale.x, transformComponent.scale.y);
+
+        const tileComponent = entity.getComponent(TileComponent);
+        if (tileComponent) {
+          this.renderTile(tileComponent, sizeComponent);
+        }
+
+        const animationComponent = entity.getComponent(AnimationComponent);
+        if (animationComponent) {
+          this.renderAnimation(
+            animationComponent,
+            sizeComponent,
+            transformComponent
+          );
+        }
+
+        this.ctx.restore();
       }
 
-      this.ctx.restore();
-
+      const boundingBoxComponent = entity.getComponent(BoundingBoxComponent);
       if (this.showBoundingBoxes() && boundingBoxComponent) {
         this.renderBoundingBox(transformComponent, boundingBoxComponent);
       }
