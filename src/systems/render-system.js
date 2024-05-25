@@ -63,8 +63,8 @@ class RenderSystem extends System {
     const { tileset, tileX, tileY, tileWidth, tileHeight } = tileComponent;
     this.ctx.drawImage(
       tileset,
-      tileX * tileWidth,
-      tileY * tileHeight,
+      tileX,
+      tileY,
       tileWidth,
       tileHeight,
       0,

@@ -46,8 +46,9 @@ class LevelLoader {
     tilemapData.forEach((row, y) => {
       row.forEach((tile, x) => {
         if (tile !== -1) {
-          const tileX = tile % (tileset.width / tileSize);
-          const tileY = Math.floor(tile / (tileset.width / tileSize));
+          const tileX = (tile % (tileset.width / tileSize)) * tileSize;
+          const tileY =
+            Math.floor(tile / (tileset.width / tileSize)) * tileSize;
           const entity = new Entity();
           entity.addComponent(
             new TransformComponent(
