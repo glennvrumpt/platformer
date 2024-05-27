@@ -10,7 +10,7 @@ class PlayInputSystem extends System {
   }
 
   handleAction(action) {
-    const actionCode = action.code;
+    const actionValue = action.value;
     const actionType = action.type;
 
     const player = this.entityManager.tagSystem.getEntityByTag("player");
@@ -31,28 +31,48 @@ class PlayInputSystem extends System {
       return;
     }
 
-    if (actionType === "keydown") {
-      if (actionCode === 87) {
-        inputComponent.up = true;
-      } else if (actionCode === 65) {
-        inputComponent.left = true;
-        transformComponent.direction = "left";
-      } else if (actionCode === 68) {
-        inputComponent.right = true;
-        transformComponent.direction = "right";
-      } else if (actionCode === 32) {
-      } else if (actionCode === 67) {
-        this.playScene.showBoundingBoxes = !this.playScene.showBoundingBoxes;
-      }
-    } else if (actionType === "keyup") {
-      if (actionCode === 87) {
-        inputComponent.up = false;
-      } else if (actionCode === 65) {
-        inputComponent.left = false;
-      } else if (actionCode === 68) {
-        inputComponent.right = false;
-      } else if (actionCode === 32) {
-      }
+    switch (actionType) {
+      case "keydown":
+        switch (actionValue) {
+          case "jump":
+            inputComponent.up = true;
+            break;
+          case "left":
+            inputComponent.left = true;
+            transformComponent.direction = "left";
+            break;
+          case "right":
+            inputComponent.right = true;
+            transformComponent.direction = "right";
+            break;
+          case "toggleBoundingBoxes":
+            this.playScene.showBoundingBoxes =
+              !this.playScene.showBoundingBoxes;
+            break;
+          default:
+            break;
+        }
+        break;
+
+      case "keyup":
+        switch (actionValue) {
+          case "jump":
+            inputComponent.up = false;
+            this.canJump = true;
+            break;
+          case "left":
+            inputComponent.left = false;
+            break;
+          case "right":
+            inputComponent.right = false;
+            break;
+          default:
+            break;
+        }
+        break;
+
+      default:
+        break;
     }
   }
 }

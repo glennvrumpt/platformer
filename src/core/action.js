@@ -1,6 +1,6 @@
 class Action {
-  constructor(code, type) {
-    this.code = code;
+  constructor(value, type) {
+    this.value = value;
     this.type = type;
   }
 }
