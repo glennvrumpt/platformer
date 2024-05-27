@@ -41,7 +41,6 @@ class PlayInputSystem extends System {
         inputComponent.right = true;
         transformComponent.direction = "right";
       } else if (actionCode === 32) {
-        inputComponent.shoot = true;
       } else if (actionCode === 67) {
         this.playScene.showBoundingBoxes = !this.playScene.showBoundingBoxes;
       }
@@ -53,7 +52,6 @@ class PlayInputSystem extends System {
       } else if (actionCode === 68) {
         inputComponent.right = false;
       } else if (actionCode === 32) {
-        inputComponent.shoot = false;
       }
     }
   }

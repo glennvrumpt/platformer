@@ -37,10 +37,16 @@ class MovementSystem extends System {
 
       if (
         inputComponent.up &&
+        inputComponent.canJump &&
         gravityComponent &&
         gravityComponent.force === 0
       ) {
         velocity.y = -jumpSpeed;
+        inputComponent.canJump = false;
+      }
+
+      if (!inputComponent.up) {
+        inputComponent.canJump = true;
       }
 
       transformComponent.position = transformComponent.position.add(
