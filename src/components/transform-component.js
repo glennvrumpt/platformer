@@ -7,7 +7,7 @@ class TransformComponent extends Component {
     velocity = new Vector2(0, 0),
     scale = new Vector2(1, 1),
     rotation = 0,
-    direction = "right"
+    direction = 1
   ) {
     super();
     this.position = position;

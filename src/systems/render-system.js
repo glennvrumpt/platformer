@@ -88,8 +88,8 @@ class RenderSystem extends System {
       const sourceX = currentFrame * frameWidth;
 
       this.ctx.save();
-      if (transformComponent.direction === "left") {
-        this.ctx.scale(-1, 1);
+      if (transformComponent.direction === -1) {
+        this.ctx.scale(transformComponent.direction, 1);
         this.ctx.translate(-sizeComponent.width, 0);
       }
       this.ctx.drawImage(

@@ -17,7 +17,7 @@ class InputSystem extends System {
     const actionValue = scene.getAction(event.keyCode);
 
     if (actionValue) {
-      const action = new Action(actionValue, type);
+      const action = new Action(event.keyCode, type);
       scene.doAction(action);
     }
   }

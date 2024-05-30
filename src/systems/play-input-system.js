@@ -34,18 +34,18 @@ class PlayInputSystem extends System {
     switch (actionType) {
       case "keydown":
         switch (actionValue) {
-          case "jump":
+          case 87:
             inputComponent.up = true;
             break;
-          case "left":
+          case 65:
             inputComponent.left = true;
-            transformComponent.direction = "left";
+            transformComponent.direction = -1;
             break;
-          case "right":
+          case 68:
             inputComponent.right = true;
-            transformComponent.direction = "right";
+            transformComponent.direction = 1;
             break;
-          case "toggleBoundingBoxes":
+          case 67:
             this.playScene.showBoundingBoxes =
               !this.playScene.showBoundingBoxes;
             break;
@@ -56,14 +56,13 @@ class PlayInputSystem extends System {
 
       case "keyup":
         switch (actionValue) {
-          case "jump":
+          case 87:
             inputComponent.up = false;
-            this.canJump = true;
             break;
-          case "left":
+          case 65:
             inputComponent.left = false;
             break;
-          case "right":
+          case 68:
             inputComponent.right = false;
             break;
           default:
