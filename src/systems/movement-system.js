@@ -18,35 +18,38 @@ class MovementSystem extends System {
       const transformComponent = entity.getComponent(TransformComponent);
       const gravityComponent = entity.getComponent(GravityComponent);
 
-      if (!inputComponent || !transformComponent) return;
+      if (!transformComponent) return;
 
-      const jumpSpeed = 700;
-      const speed = 200;
       const velocity = transformComponent.velocity;
 
       if (gravityComponent) {
         velocity.y += gravityComponent.force;
       }
 
-      if (inputComponent.left) {
-        velocity.x = -speed;
-      }
-      if (inputComponent.right) {
-        velocity.x = speed;
-      }
+      if (inputComponent) {
+        const jumpSpeed = 700;
+        const speed = 200;
 
-      if (
-        inputComponent.up &&
-        inputComponent.canJump &&
-        gravityComponent &&
-        gravityComponent.force === 0
-      ) {
-        velocity.y = -jumpSpeed;
-        inputComponent.canJump = false;
-      }
+        if (inputComponent.left) {
+          velocity.x = -speed;
+        }
+        if (inputComponent.right) {
+          velocity.x = speed;
+        }
 
-      if (!inputComponent.up) {
-        inputComponent.canJump = true;
+        if (
+          inputComponent.up &&
+          inputComponent.canJump &&
+          gravityComponent &&
+          gravityComponent.force === 0
+        ) {
+          velocity.y = -jumpSpeed;
+          inputComponent.canJump = false;
+        }
+
+        if (!inputComponent.up) {
+          inputComponent.canJump = true;
+        }
       }
 
       transformComponent.position = transformComponent.position.add(
