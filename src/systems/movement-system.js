@@ -33,11 +33,7 @@ class MovementSystem extends System {
         velocity.x = 0;
 
         if (inputComponent.left && inputComponent.right) {
-          if (inputComponent.lastHorizontalKeyPressed === "left") {
-            velocity.x = -speed;
-          } else if (inputComponent.lastHorizontalKeyPressed === "right") {
-            velocity.x = speed;
-          }
+          velocity.x = speed * inputComponent.lastHorizontalKeyPressed;
         } else if (inputComponent.left) {
           velocity.x = -speed;
         } else if (inputComponent.right) {
