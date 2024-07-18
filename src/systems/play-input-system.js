@@ -39,11 +39,11 @@ class PlayInputSystem extends System {
             break;
           case 65:
             inputComponent.left = true;
-            inputComponent.lastHorizontalKeyPressed = -1;
+            transformComponent.direction = -1;
             break;
           case 68:
             inputComponent.right = true;
-            inputComponent.lastHorizontalKeyPressed = 1;
+            transformComponent.direction = 1;
             break;
           case 67:
             this.playScene.showBoundingBoxes =

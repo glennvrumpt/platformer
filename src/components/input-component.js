@@ -10,7 +10,6 @@ class InputComponent extends Component {
     this.shoot = false;
     this.canShoot = true;
     this.canJump = true;
-    this.lastHorizontalKeyPressed = 0;
   }
 }
 
