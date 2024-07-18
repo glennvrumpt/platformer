@@ -30,11 +30,22 @@ class MovementSystem extends System {
         const jumpSpeed = 700;
         const speed = 200;
 
-        if (inputComponent.left) {
+        velocity.x = 0;
+
+        if (inputComponent.left && inputComponent.right) {
+          if (inputComponent.lastHorizontalKeyPressed === "left") {
+            velocity.x = -speed;
+          } else if (inputComponent.lastHorizontalKeyPressed === "right") {
+            velocity.x = speed;
+          }
+        } else if (inputComponent.left) {
           velocity.x = -speed;
-        }
-        if (inputComponent.right) {
+        } else if (inputComponent.right) {
           velocity.x = speed;
+        }
+
+        if (velocity.x !== 0) {
+          transformComponent.direction = Math.sign(velocity.x);
         }
 
         if (
@@ -55,8 +66,6 @@ class MovementSystem extends System {
       transformComponent.position = transformComponent.position.add(
         velocity.multiply(deltaTime)
       );
-
-      velocity.x = 0;
     });
   }
 }
