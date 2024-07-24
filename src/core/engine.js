@@ -22,6 +22,29 @@ class Engine {
     this.run();
   }
 
+  run() {
+    this.running = true;
+    this.update(performance.now());
+  }
+
+  update(currentTime) {
+    const deltaTime = (currentTime - this.lastFrameTime) / 1000;
+    this.lastFrameTime = currentTime;
+
+    if (this.running) {
+      const scene = this.sceneManager.getCurrentScene();
+      if (scene) {
+        scene.update(deltaTime);
+      }
+    }
+
+    requestAnimationFrame((timestamp) => this.update(timestamp));
+  }
+
+  stop() {
+    this.running = false;
+  }
+
   createCanvas() {
     this.canvas = document.createElement("canvas");
     this.canvas.width = 1280;
@@ -58,29 +81,6 @@ class Engine {
       "far",
       "../src/assets/images/Environment/Layers/far.png"
     );
-  }
-
-  run() {
-    this.running = true;
-    this.update(performance.now());
-  }
-
-  update(currentTime) {
-    const deltaTime = (currentTime - this.lastFrameTime) / 1000;
-    this.lastFrameTime = currentTime;
-
-    if (this.running) {
-      const scene = this.sceneManager.getCurrentScene();
-      if (scene) {
-        scene.update(deltaTime);
-      }
-    }
-
-    requestAnimationFrame((timestamp) => this.update(timestamp));
-  }
-
-  stop() {
-    this.running = false;
   }
 }
 

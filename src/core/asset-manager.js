@@ -12,19 +12,19 @@ class AssetManager {
     this.textures.set(name, image);
   }
 
-  addSound(name, path) {}
-
-  addFont(name, path) {}
-
-  addAnimation(name, animationData) {}
-
   getTexture(name) {
     return this.textures.get(name);
   }
 
+  addSound(name, path) {}
+
   getSound(name) {}
 
+  addFont(name, path) {}
+
   getFont(name) {}
+
+  addAnimation(name, animationData) {}
 
   getAnimation(name) {}
 }

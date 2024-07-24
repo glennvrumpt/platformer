@@ -27,42 +27,51 @@ class MovementSystem extends System {
       }
 
       if (inputComponent) {
-        const jumpSpeed = 700;
-        const speed = 200;
-
-        velocity.x = 0;
-
-        if (inputComponent.left && inputComponent.right) {
-          velocity.x = speed * transformComponent.direction;
-        } else if (inputComponent.left) {
-          velocity.x = -speed;
-        } else if (inputComponent.right) {
-          velocity.x = speed;
-        }
-
-        if (velocity.x !== 0) {
-          transformComponent.direction = Math.sign(velocity.x);
-        }
-
-        if (
-          inputComponent.up &&
-          inputComponent.canJump &&
-          gravityComponent &&
-          gravityComponent.force === 0
-        ) {
-          velocity.y = -jumpSpeed;
-          inputComponent.canJump = false;
-        }
-
-        if (!inputComponent.up) {
-          inputComponent.canJump = true;
-        }
+        this.handleMovement(
+          inputComponent,
+          transformComponent,
+          gravityComponent
+        );
       }
 
       transformComponent.position = transformComponent.position.add(
         velocity.multiply(deltaTime)
       );
     });
+  }
+
+  handleMovement(inputComponent, transformComponent, gravityComponent) {
+    const velocity = transformComponent.velocity;
+    const jumpSpeed = 700;
+    const speed = 200;
+
+    velocity.x = 0;
+
+    if (inputComponent.left && inputComponent.right) {
+      velocity.x = speed * transformComponent.direction;
+    } else if (inputComponent.left) {
+      velocity.x = -speed;
+    } else if (inputComponent.right) {
+      velocity.x = speed;
+    }
+
+    if (velocity.x !== 0) {
+      transformComponent.direction = Math.sign(velocity.x);
+    }
+
+    if (
+      inputComponent.up &&
+      inputComponent.canJump &&
+      gravityComponent &&
+      gravityComponent.force === 0
+    ) {
+      velocity.y = -jumpSpeed;
+      inputComponent.canJump = false;
+    }
+
+    if (!inputComponent.up) {
+      inputComponent.canJump = true;
+    }
   }
 }
 
