@@ -1,190 +1,198 @@
 import System from "../core/system.js";
 import TransformComponent from "../components/transform-component.js";
 import BoundingBoxComponent from "../components/bounding-box-component.js";
+import InputComponent from "../components/input-component.js";
+import TagComponent from "../components/tag-component.js";
 import GravityComponent from "../components/gravity-component.js";
-import StateComponent from "../components/state-component.js";
 import Vector2 from "../utilities/vector2.js";
 
 class CollisionSystem extends System {
-  constructor(entityManager) {
+  constructor(entityManager, cellSize = 64) {
     super();
     this.entityManager = entityManager;
+    this.cellSize = cellSize;
+    this.grid = new Map();
+  }
+
+  getCellKey(x, y) {
+    const cellX = Math.floor(x / this.cellSize);
+    const cellY = Math.floor(y / this.cellSize);
+    return `${cellX},${cellY}`;
+  }
+
+  addToGrid(entity) {
+    const transform = entity.getComponent(TransformComponent);
+    const boundingBox = entity.getComponent(BoundingBoxComponent);
+
+    if (!transform || !boundingBox) return;
+
+    const minX = transform.position.x + boundingBox.offsetX;
+    const minY = transform.position.y + boundingBox.offsetY;
+    const maxX = minX + boundingBox.width;
+    const maxY = minY + boundingBox.height;
+
+    const cellMinX = Math.floor(minX / this.cellSize);
+    const cellMinY = Math.floor(minY / this.cellSize);
+    const cellMaxX = Math.floor(maxX / this.cellSize);
+    const cellMaxY = Math.floor(maxY / this.cellSize);
+
+    for (let cellY = cellMinY; cellY <= cellMaxY; cellY++) {
+      for (let cellX = cellMinX; cellX <= cellMaxX; cellX++) {
+        const key = this.getCellKey(
+          cellX * this.cellSize,
+          cellY * this.cellSize
+        );
+        if (!this.grid.has(key)) {
+          this.grid.set(key, new Set());
+        }
+        this.grid.get(key).add(entity);
+      }
+    }
+  }
+
+  clearGrid() {
+    this.grid.clear();
+  }
+
+  checkCollision(entity1, entity2) {
+    const transform1 = entity1.getComponent(TransformComponent);
+    const boundingBox1 = entity1.getComponent(BoundingBoxComponent);
+    const transform2 = entity2.getComponent(TransformComponent);
+    const boundingBox2 = entity2.getComponent(BoundingBoxComponent);
+
+    if (!transform1 || !boundingBox1 || !transform2 || !boundingBox2)
+      return false;
+
+    const left1 = transform1.position.x + boundingBox1.offsetX;
+    const right1 = left1 + boundingBox1.width;
+    const top1 = transform1.position.y + boundingBox1.offsetY;
+    const bottom1 = top1 + boundingBox1.height;
+
+    const left2 = transform2.position.x + boundingBox2.offsetX;
+    const right2 = left2 + boundingBox2.width;
+    const top2 = transform2.position.y + boundingBox2.offsetY;
+    const bottom2 = top2 + boundingBox2.height;
+
+    return left1 < right2 && right1 > left2 && top1 < bottom2 && bottom1 > top2;
   }
 
   update(deltaTime) {
+    this.clearGrid();
+
     const entities = this.entityManager.entities;
-    const player = this.entityManager.tagSystem.getEntityByTag("player");
+    entities.forEach((entity) => this.addToGrid(entity));
 
-    if (!player) return;
-
-    const playerTransform = player.getComponent(TransformComponent);
-    const playerBoundingBox = player.getComponent(BoundingBoxComponent);
-    const playerVelocity = playerTransform.velocity;
-
-    let isOnGround = false;
-
-    const entitiesInRadius = this.getEntitiesInRadius(
-      playerTransform.position,
-      100
-    );
-
-    entitiesInRadius.forEach((entity) => {
-      if (entity === player) return;
-
-      const transform = entity.getComponent(TransformComponent);
-      const boundingBox = entity.getComponent(BoundingBoxComponent);
-
+    entities.forEach((entity) => {
       if (
-        this.isColliding(
-          playerTransform,
-          playerBoundingBox,
-          transform,
-          boundingBox
-        )
+        entity.getComponent(TransformComponent) &&
+        entity.getComponent(BoundingBoxComponent)
       ) {
-        const collisionNormal = this.resolveCollision(
-          playerTransform,
-          playerBoundingBox,
-          transform,
-          boundingBox,
-          playerVelocity
+        const gravityComponent = entity.getComponent(GravityComponent);
+        if (gravityComponent) {
+          gravityComponent.isOnGround = false;
+        }
+        this.handleCollisionsForEntity(entity);
+      }
+    });
+  }
+
+  handleCollisionsForEntity(entity) {
+    const transform = entity.getComponent(TransformComponent);
+    const boundingBox = entity.getComponent(BoundingBoxComponent);
+
+    const minX = transform.position.x + boundingBox.offsetX;
+    const minY = transform.position.y + boundingBox.offsetY;
+    const maxX = minX + boundingBox.width;
+    const maxY = minY + boundingBox.height;
+
+    const cellMinX = Math.floor(minX / this.cellSize);
+    const cellMinY = Math.floor(minY / this.cellSize);
+    const cellMaxX = Math.floor(maxX / this.cellSize);
+    const cellMaxY = Math.floor(maxY / this.cellSize);
+
+    const collidedEntities = new Set();
+
+    for (let cellY = cellMinY; cellY <= cellMaxY; cellY++) {
+      for (let cellX = cellMinX; cellX <= cellMaxX; cellX++) {
+        const key = this.getCellKey(
+          cellX * this.cellSize,
+          cellY * this.cellSize
         );
+        const cellEntities = this.grid.get(key);
 
-        if (collisionNormal.y < 0) {
-          isOnGround = true;
-        }
-
-        if (collisionNormal.x !== 0) {
-          playerVelocity.x = 0;
-        }
-        if (collisionNormal.y !== 0) {
-          playerVelocity.y = 0;
+        if (cellEntities) {
+          cellEntities.forEach((otherEntity) => {
+            if (entity !== otherEntity && !collidedEntities.has(otherEntity)) {
+              if (this.checkCollision(entity, otherEntity)) {
+                collidedEntities.add(otherEntity);
+                this.resolveCollision(entity, otherEntity);
+              }
+            }
+          });
         }
       }
-    });
-
-    entitiesInRadius.forEach((tileEntity) => {
-      const tileTransform = tileEntity.getComponent(TransformComponent);
-      const tileBoundingBox = tileEntity.getComponent(BoundingBoxComponent);
-
-      if (
-        this.isStandingOnTop(
-          playerTransform.position,
-          playerBoundingBox,
-          tileTransform.position,
-          tileBoundingBox
-        )
-      ) {
-        isOnGround = true;
-      }
-    });
-
-    const gravityComponent = player.getComponent(GravityComponent);
-    if (gravityComponent) {
-      gravityComponent.force = isOnGround ? 0 : 9.8;
-    }
-
-    const stateComponent = player.getComponent(StateComponent);
-    if (stateComponent) {
-      stateComponent.state = isOnGround ? "idle" : "fall";
     }
   }
 
-  getEntitiesInRadius(position, radius) {
-    const result = [];
-    this.entityManager.entities.forEach((entity) => {
-      const transform = entity.getComponent(TransformComponent);
-      if (transform) {
-        const entityPosition = new Vector2(
-          transform.position.x,
-          transform.position.y
+  resolveCollision(entity1, entity2) {
+    const transform1 = entity1.getComponent(TransformComponent);
+    const boundingBox1 = entity1.getComponent(BoundingBoxComponent);
+    const transform2 = entity2.getComponent(TransformComponent);
+    const boundingBox2 = entity2.getComponent(BoundingBoxComponent);
+
+    const tagComponent2 = entity2.getComponent(TagComponent);
+    const isTile = tagComponent2 && tagComponent2.tags.has("tile");
+
+    if (isTile) {
+      const overlapX =
+        Math.min(
+          transform1.position.x + boundingBox1.offsetX + boundingBox1.width,
+          transform2.position.x + boundingBox2.offsetX + boundingBox2.width
+        ) -
+        Math.max(
+          transform1.position.x + boundingBox1.offsetX,
+          transform2.position.x + boundingBox2.offsetX
         );
-        if (Vector2.distance(position, entityPosition) <= radius) {
-          result.push(entity);
-        }
-      }
-    });
-    return result;
-  }
 
-  isColliding(transformA, boundingBoxA, transformB, boundingBoxB) {
-    const ax = transformA.position.x + boundingBoxA.offsetX;
-    const ay = transformA.position.y + boundingBoxA.offsetY;
-    const aw = boundingBoxA.width;
-    const ah = boundingBoxA.height;
+      const overlapY =
+        Math.min(
+          transform1.position.y + boundingBox1.offsetY + boundingBox1.height,
+          transform2.position.y + boundingBox2.offsetY + boundingBox2.height
+        ) -
+        Math.max(
+          transform1.position.y + boundingBox1.offsetY,
+          transform2.position.y + boundingBox2.offsetY
+        );
 
-    const bx = transformB.position.x + boundingBoxB.offsetX;
-    const by = transformB.position.y + boundingBoxB.offsetY;
-    const bw = boundingBoxB.width;
-    const bh = boundingBoxB.height;
-
-    return ax < bx + bw && ax + aw > bx && ay < by + bh && ay + ah > by;
-  }
-
-  resolveCollision(
-    transformA,
-    boundingBoxA,
-    transformB,
-    boundingBoxB,
-    velocityA
-  ) {
-    const ax = transformA.position.x + boundingBoxA.offsetX;
-    const ay = transformA.position.y + boundingBoxA.offsetY;
-    const aw = boundingBoxA.width;
-    const ah = boundingBoxA.height;
-
-    const bx = transformB.position.x + boundingBoxB.offsetX;
-    const by = transformB.position.y + boundingBoxB.offsetY;
-    const bw = boundingBoxB.width;
-    const bh = boundingBoxB.height;
-
-    const dx = ax + aw / 2 - (bx + bw / 2);
-    const dy = ay + ah / 2 - (by + bh / 2);
-    const width = (aw + bw) / 2;
-    const height = (ah + bh) / 2;
-    const crossWidth = width * dy;
-    const crossHeight = height * dx;
-    let collisionNormal = { x: 0, y: 0 };
-
-    if (Math.abs(dx) <= width && Math.abs(dy) <= height) {
-      if (crossWidth > crossHeight) {
-        if (crossWidth > -crossHeight) {
-          collisionNormal = { x: 0, y: 1 };
-          transformA.position.y = by + bh - boundingBoxA.offsetY;
+      if (overlapX < overlapY) {
+        if (transform1.position.x < transform2.position.x) {
+          transform1.position.x -= overlapX;
         } else {
-          collisionNormal = { x: -1, y: 0 };
-          transformA.position.x = bx - aw - boundingBoxA.offsetX;
+          transform1.position.x += overlapX;
         }
+        transform1.velocity.x = 0;
       } else {
-        if (crossWidth > -crossHeight) {
-          collisionNormal = { x: 1, y: 0 };
-          transformA.position.x = bx + bw - boundingBoxA.offsetX;
+        if (transform1.position.y < transform2.position.y) {
+          transform1.position.y -= overlapY;
+          transform1.velocity.y = 0;
+
+          const gravityComponent = entity1.getComponent(GravityComponent);
+          if (gravityComponent) {
+            gravityComponent.isOnGround = true;
+          }
+
+          const inputComponent = entity1.getComponent(InputComponent);
+          if (inputComponent) {
+            inputComponent.canJump = true;
+          }
         } else {
-          collisionNormal = { x: 0, y: -1 };
-          transformA.position.y = by - ah - boundingBoxA.offsetY;
+          transform1.position.y += overlapY;
+          transform1.velocity.y = 0;
         }
       }
+    } else {
+      console.log("Collision between entities:", entity1, entity2);
     }
-
-    return collisionNormal;
-  }
-
-  isStandingOnTop(
-    playerPosition,
-    playerBoundingBox,
-    tilePosition,
-    tileBoundingBox
-  ) {
-    return (
-      playerPosition.y + playerBoundingBox.offsetY + playerBoundingBox.height <=
-        tilePosition.y + 1 &&
-      playerPosition.y + playerBoundingBox.offsetY + playerBoundingBox.height >=
-        tilePosition.y - 1 &&
-      playerPosition.x + playerBoundingBox.offsetX + playerBoundingBox.width >
-        tilePosition.x &&
-      playerPosition.x + playerBoundingBox.offsetX <
-        tilePosition.x + tileBoundingBox.width
-    );
   }
 }
 

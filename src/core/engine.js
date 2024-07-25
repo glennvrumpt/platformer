@@ -28,7 +28,11 @@ class Engine {
   }
 
   update(currentTime) {
-    const deltaTime = (currentTime - this.lastFrameTime) / 1000;
+    let deltaTime = (currentTime - this.lastFrameTime) / 1000;
+
+    const maxDeltaTime = 0.1;
+    deltaTime = Math.min(deltaTime, maxDeltaTime);
+
     this.lastFrameTime = currentTime;
 
     if (this.running) {

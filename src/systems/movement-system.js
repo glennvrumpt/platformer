@@ -20,10 +20,8 @@ class MovementSystem extends System {
 
       if (!transformComponent) return;
 
-      const velocity = transformComponent.velocity;
-
       if (gravityComponent) {
-        velocity.y += gravityComponent.force;
+        this.applyGravity(gravityComponent, transformComponent);
       }
 
       if (inputComponent) {
@@ -34,10 +32,16 @@ class MovementSystem extends System {
         );
       }
 
-      transformComponent.position = transformComponent.position.add(
-        velocity.multiply(deltaTime)
-      );
+      this.updatePosition(transformComponent, deltaTime);
     });
+  }
+
+  applyGravity(gravityComponent, transformComponent) {
+    if (gravityComponent && !gravityComponent.isOnGround) {
+      transformComponent.velocity.y += gravityComponent.force;
+    } else if (gravityComponent) {
+      transformComponent.velocity.y = 0;
+    }
   }
 
   handleMovement(inputComponent, transformComponent, gravityComponent) {
@@ -63,15 +67,18 @@ class MovementSystem extends System {
       inputComponent.up &&
       inputComponent.canJump &&
       gravityComponent &&
-      gravityComponent.force === 0
+      gravityComponent.isOnGround
     ) {
       velocity.y = -jumpSpeed;
       inputComponent.canJump = false;
+      gravityComponent.isOnGround = false;
     }
+  }
 
-    if (!inputComponent.up) {
-      inputComponent.canJump = true;
-    }
+  updatePosition(transformComponent, deltaTime) {
+    transformComponent.position = transformComponent.position.add(
+      transformComponent.velocity.multiply(deltaTime)
+    );
   }
 }
 

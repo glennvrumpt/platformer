@@ -43,9 +43,13 @@ class AnimationSystem extends System {
     gravityComponent,
     deltaTime
   ) {
+    const jumpThreshold = 10;
     let newAnimation = null;
 
-    if (transformComponent.velocity.y !== 0) {
+    if (
+      !gravityComponent.isOnGround &&
+      Math.abs(transformComponent.velocity.y) > jumpThreshold
+    ) {
       newAnimation = "jump";
     } else if (inputComponent.left || inputComponent.right) {
       newAnimation = "run";
