@@ -2,7 +2,7 @@ import System from "../core/system.js";
 import InputComponent from "../components/input-component.js";
 import TransformComponent from "../components/transform-component.js";
 import GravityComponent from "../components/gravity-component.js";
-import Vector2 from "../utilities/vector2.js";
+import MovementComponent from "../components/movement-component.js";
 
 class MovementSystem extends System {
   constructor(entityManager) {
@@ -17,8 +17,9 @@ class MovementSystem extends System {
       const inputComponent = entity.getComponent(InputComponent);
       const transformComponent = entity.getComponent(TransformComponent);
       const gravityComponent = entity.getComponent(GravityComponent);
+      const movementComponent = entity.getComponent(MovementComponent);
 
-      if (!transformComponent) return;
+      if (!transformComponent || !movementComponent) return;
 
       if (gravityComponent) {
         this.applyGravity(gravityComponent, transformComponent);
@@ -28,7 +29,8 @@ class MovementSystem extends System {
         this.handleMovement(
           inputComponent,
           transformComponent,
-          gravityComponent
+          gravityComponent,
+          movementComponent
         );
       }
 
@@ -44,34 +46,39 @@ class MovementSystem extends System {
     }
   }
 
-  handleMovement(inputComponent, transformComponent, gravityComponent) {
+  handleMovement(
+    inputComponent,
+    transformComponent,
+    gravityComponent,
+    movementComponent
+  ) {
     const velocity = transformComponent.velocity;
-    const jumpSpeed = 700;
-    const speed = 200;
+    const { movementSpeed, jumpSpeed } = movementComponent;
 
     velocity.x = 0;
 
-    if (inputComponent.left && inputComponent.right) {
-      velocity.x = speed * transformComponent.direction;
-    } else if (inputComponent.left) {
-      velocity.x = -speed;
-    } else if (inputComponent.right) {
-      velocity.x = speed;
-    }
+    if (inputComponent.keys.left) velocity.x -= movementSpeed;
+    if (inputComponent.keys.right) velocity.x += movementSpeed;
 
     if (velocity.x !== 0) {
       transformComponent.direction = Math.sign(velocity.x);
     }
 
+    if (gravityComponent.isOnGround) {
+      inputComponent.canJump = true;
+    }
+
     if (
-      inputComponent.up &&
+      inputComponent.jumpPressed &&
       inputComponent.canJump &&
-      gravityComponent &&
       gravityComponent.isOnGround
     ) {
       velocity.y = -jumpSpeed;
-      inputComponent.canJump = false;
       gravityComponent.isOnGround = false;
+      inputComponent.canJump = false;
+      inputComponent.jumpPressed = false;
+    } else if (!inputComponent.keys.up) {
+      inputComponent.jumpPressed = false;
     }
   }
 

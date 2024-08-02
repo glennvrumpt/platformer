@@ -4,54 +4,13 @@ import BoundingBoxComponent from "../components/bounding-box-component.js";
 import InputComponent from "../components/input-component.js";
 import TagComponent from "../components/tag-component.js";
 import GravityComponent from "../components/gravity-component.js";
-import Vector2 from "../utilities/vector2.js";
+import SpatialHashGrid from "../utilities/spatial-hash-grid.js";
 
 class CollisionSystem extends System {
   constructor(entityManager, cellSize = 64) {
     super();
     this.entityManager = entityManager;
-    this.cellSize = cellSize;
-    this.grid = new Map();
-  }
-
-  getCellKey(x, y) {
-    const cellX = Math.floor(x / this.cellSize);
-    const cellY = Math.floor(y / this.cellSize);
-    return `${cellX},${cellY}`;
-  }
-
-  addToGrid(entity) {
-    const transform = entity.getComponent(TransformComponent);
-    const boundingBox = entity.getComponent(BoundingBoxComponent);
-
-    if (!transform || !boundingBox) return;
-
-    const minX = transform.position.x + boundingBox.offsetX;
-    const minY = transform.position.y + boundingBox.offsetY;
-    const maxX = minX + boundingBox.width;
-    const maxY = minY + boundingBox.height;
-
-    const cellMinX = Math.floor(minX / this.cellSize);
-    const cellMinY = Math.floor(minY / this.cellSize);
-    const cellMaxX = Math.floor(maxX / this.cellSize);
-    const cellMaxY = Math.floor(maxY / this.cellSize);
-
-    for (let cellY = cellMinY; cellY <= cellMaxY; cellY++) {
-      for (let cellX = cellMinX; cellX <= cellMaxX; cellX++) {
-        const key = this.getCellKey(
-          cellX * this.cellSize,
-          cellY * this.cellSize
-        );
-        if (!this.grid.has(key)) {
-          this.grid.set(key, new Set());
-        }
-        this.grid.get(key).add(entity);
-      }
-    }
-  }
-
-  clearGrid() {
-    this.grid.clear();
+    this.spatialGrid = new SpatialHashGrid(cellSize);
   }
 
   checkCollision(entity1, entity2) {
@@ -63,24 +22,30 @@ class CollisionSystem extends System {
     if (!transform1 || !boundingBox1 || !transform2 || !boundingBox2)
       return false;
 
-    const left1 = transform1.position.x + boundingBox1.offsetX;
-    const right1 = left1 + boundingBox1.width;
-    const top1 = transform1.position.y + boundingBox1.offsetY;
-    const bottom1 = top1 + boundingBox1.height;
+    const left1 = transform1.position.x + boundingBox1.offset.x;
+    const right1 = left1 + boundingBox1.size.width;
+    const top1 = transform1.position.y + boundingBox1.offset.y;
+    const bottom1 = top1 + boundingBox1.size.height;
 
-    const left2 = transform2.position.x + boundingBox2.offsetX;
-    const right2 = left2 + boundingBox2.width;
-    const top2 = transform2.position.y + boundingBox2.offsetY;
-    const bottom2 = top2 + boundingBox2.height;
+    const left2 = transform2.position.x + boundingBox2.offset.x;
+    const right2 = left2 + boundingBox2.size.width;
+    const top2 = transform2.position.y + boundingBox2.offset.y;
+    const bottom2 = top2 + boundingBox2.size.height;
 
     return left1 < right2 && right1 > left2 && top1 < bottom2 && bottom1 > top2;
   }
 
   update(deltaTime) {
-    this.clearGrid();
+    this.spatialGrid.clear();
 
     const entities = this.entityManager.entities;
-    entities.forEach((entity) => this.addToGrid(entity));
+    entities.forEach((entity) => {
+      const transform = entity.getComponent(TransformComponent);
+      const boundingBox = entity.getComponent(BoundingBoxComponent);
+      if (transform && boundingBox) {
+        this.spatialGrid.addEntity(entity, transform, boundingBox);
+      }
+    });
 
     entities.forEach((entity) => {
       if (
@@ -100,38 +65,27 @@ class CollisionSystem extends System {
     const transform = entity.getComponent(TransformComponent);
     const boundingBox = entity.getComponent(BoundingBoxComponent);
 
-    const minX = transform.position.x + boundingBox.offsetX;
-    const minY = transform.position.y + boundingBox.offsetY;
-    const maxX = minX + boundingBox.width;
-    const maxY = minY + boundingBox.height;
-
-    const cellMinX = Math.floor(minX / this.cellSize);
-    const cellMinY = Math.floor(minY / this.cellSize);
-    const cellMaxX = Math.floor(maxX / this.cellSize);
-    const cellMaxY = Math.floor(maxY / this.cellSize);
+    const minX = transform.position.x + boundingBox.offset.x;
+    const minY = transform.position.y + boundingBox.offset.y;
+    const maxX = minX + boundingBox.size.width;
+    const maxY = minY + boundingBox.size.height;
 
     const collidedEntities = new Set();
+    const nearbyEntities = this.spatialGrid.getEntitiesInArea(
+      minX,
+      minY,
+      maxX,
+      maxY
+    );
 
-    for (let cellY = cellMinY; cellY <= cellMaxY; cellY++) {
-      for (let cellX = cellMinX; cellX <= cellMaxX; cellX++) {
-        const key = this.getCellKey(
-          cellX * this.cellSize,
-          cellY * this.cellSize
-        );
-        const cellEntities = this.grid.get(key);
-
-        if (cellEntities) {
-          cellEntities.forEach((otherEntity) => {
-            if (entity !== otherEntity && !collidedEntities.has(otherEntity)) {
-              if (this.checkCollision(entity, otherEntity)) {
-                collidedEntities.add(otherEntity);
-                this.resolveCollision(entity, otherEntity);
-              }
-            }
-          });
+    nearbyEntities.forEach((otherEntity) => {
+      if (entity !== otherEntity && !collidedEntities.has(otherEntity)) {
+        if (this.checkCollision(entity, otherEntity)) {
+          collidedEntities.add(otherEntity);
+          this.resolveCollision(entity, otherEntity);
         }
       }
-    }
+    });
   }
 
   resolveCollision(entity1, entity2) {
@@ -146,22 +100,30 @@ class CollisionSystem extends System {
     if (isTile) {
       const overlapX =
         Math.min(
-          transform1.position.x + boundingBox1.offsetX + boundingBox1.width,
-          transform2.position.x + boundingBox2.offsetX + boundingBox2.width
+          transform1.position.x +
+            boundingBox1.offset.x +
+            boundingBox1.size.width,
+          transform2.position.x +
+            boundingBox2.offset.x +
+            boundingBox2.size.width
         ) -
         Math.max(
-          transform1.position.x + boundingBox1.offsetX,
-          transform2.position.x + boundingBox2.offsetX
+          transform1.position.x + boundingBox1.offset.x,
+          transform2.position.x + boundingBox2.offset.x
         );
 
       const overlapY =
         Math.min(
-          transform1.position.y + boundingBox1.offsetY + boundingBox1.height,
-          transform2.position.y + boundingBox2.offsetY + boundingBox2.height
+          transform1.position.y +
+            boundingBox1.offset.y +
+            boundingBox1.size.height,
+          transform2.position.y +
+            boundingBox2.offset.y +
+            boundingBox2.size.height
         ) -
         Math.max(
-          transform1.position.y + boundingBox1.offsetY,
-          transform2.position.y + boundingBox2.offsetY
+          transform1.position.y + boundingBox1.offset.y,
+          transform2.position.y + boundingBox2.offset.y
         );
 
       if (overlapX < overlapY) {

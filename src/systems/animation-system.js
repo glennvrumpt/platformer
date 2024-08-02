@@ -51,7 +51,10 @@ class AnimationSystem extends System {
       Math.abs(transformComponent.velocity.y) > jumpThreshold
     ) {
       newAnimation = "jump";
-    } else if (inputComponent.left || inputComponent.right) {
+    } else if (
+      transformComponent.velocity.x !== 0 &&
+      (inputComponent.keys.left || inputComponent.keys.right)
+    ) {
       newAnimation = "run";
     } else {
       newAnimation = "idle";

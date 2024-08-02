@@ -30,6 +30,23 @@ class EntityManager {
   getEntityById(id) {
     return this.entities.get(id);
   }
+
+  getEntitiesInRadius(position, radius) {
+    const result = [];
+    this.entities.forEach((entity) => {
+      const transform = entity.getComponent(TransformComponent);
+      if (transform) {
+        const entityPosition = new Vector2(
+          transform.position.x,
+          transform.position.y
+        );
+        if (Vector2.distance(position, entityPosition) <= radius) {
+          result.push(entity);
+        }
+      }
+    });
+    return result;
+  }
 }
 
 export default EntityManager;

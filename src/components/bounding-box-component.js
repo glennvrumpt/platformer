@@ -1,12 +1,10 @@
 import Component from "../core/component.js";
 
 class BoundingBoxComponent extends Component {
-  constructor(offsetX = 0, offsetY = 0, width, height) {
+  constructor(x = 0, y = 0, width, height) {
     super();
-    this.offsetX = offsetX;
-    this.offsetY = offsetY;
-    this.width = width;
-    this.height = height;
+    this.offset = { x, y };
+    this.size = { width, height };
   }
 }
 

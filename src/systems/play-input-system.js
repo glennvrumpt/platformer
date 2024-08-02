@@ -10,9 +10,6 @@ class PlayInputSystem extends System {
   }
 
   handleAction(action) {
-    const actionValue = action.value;
-    const actionType = action.type;
-
     const player = this.entityManager.tagSystem.getEntityByTag("player");
     if (!player) {
       console.error("Player entity not found");
@@ -25,51 +22,26 @@ class PlayInputSystem extends System {
       return;
     }
 
-    const transformComponent = player.getComponent(TransformComponent);
-    if (!transformComponent) {
-      console.error("TransformComponent not found on player");
-      return;
-    }
+    const isKeyDown = action.type === "keydown";
 
-    switch (actionType) {
-      case "keydown":
-        switch (actionValue) {
-          case 87:
-            inputComponent.up = true;
-            break;
-          case 65:
-            inputComponent.left = true;
-            transformComponent.direction = -1;
-            break;
-          case 68:
-            inputComponent.right = true;
-            transformComponent.direction = 1;
-            break;
-          case 67:
-            this.playScene.showBoundingBoxes =
-              !this.playScene.showBoundingBoxes;
-            break;
-          default:
-            break;
+    switch (action.value) {
+      case 87:
+        if (isKeyDown && !inputComponent.keys.up) {
+          inputComponent.jumpPressed = true;
+        }
+        inputComponent.keys.up = isKeyDown;
+        break;
+      case 65:
+        inputComponent.keys.left = isKeyDown;
+        break;
+      case 68:
+        inputComponent.keys.right = isKeyDown;
+        break;
+      case 67:
+        if (isKeyDown) {
+          this.playScene.showBoundingBoxes = !this.playScene.showBoundingBoxes;
         }
         break;
-
-      case "keyup":
-        switch (actionValue) {
-          case 87:
-            inputComponent.up = false;
-            break;
-          case 65:
-            inputComponent.left = false;
-            break;
-          case 68:
-            inputComponent.right = false;
-            break;
-          default:
-            break;
-        }
-        break;
-
       default:
         break;
     }

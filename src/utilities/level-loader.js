@@ -4,6 +4,7 @@ import TransformComponent from "../components/transform-component.js";
 import Size from "../components/size-component.js";
 import BoundingBoxComponent from "../components/bounding-box-component.js";
 import GravityComponent from "../components/gravity-component.js";
+import MovementComponent from "../components/movement-component.js";
 import AnimationComponent from "../components/animation-component.js";
 import TileComponent from "../components/tile-component.js";
 import InputComponent from "../components/input-component.js";
@@ -98,6 +99,15 @@ class LevelLoader {
 
     if (data.gravity) {
       entity.addComponent(new GravityComponent(data.gravity.force));
+    }
+
+    if (data.movement) {
+      entity.addComponent(
+        new MovementComponent(
+          data.movement.movementSpeed,
+          data.movement.jumpSpeed
+        )
+      );
     }
 
     if (data.animations) {

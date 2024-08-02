@@ -108,7 +108,10 @@ class RenderSystem extends System {
   }
 
   renderBoundingBox(transformComponent, boundingBoxComponent) {
-    const { offsetX, offsetY, width, height } = boundingBoxComponent;
+    const {
+      offset: { x: offsetX, y: offsetY },
+      size: { width, height },
+    } = boundingBoxComponent;
 
     this.ctx.save();
     this.ctx.strokeStyle = "#ffffff";
