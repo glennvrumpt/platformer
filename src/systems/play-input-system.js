@@ -28,6 +28,8 @@ class PlayInputSystem extends System {
       case 87:
         if (isKeyDown && !inputComponent.keys.up) {
           inputComponent.jumpPressed = true;
+        } else if (!isKeyDown) {
+          inputComponent.jumpPressed = false;
         }
         inputComponent.keys.up = isKeyDown;
         break;

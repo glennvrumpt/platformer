@@ -142,11 +142,6 @@ class CollisionSystem extends System {
           if (gravityComponent) {
             gravityComponent.isOnGround = true;
           }
-
-          const inputComponent = entity1.getComponent(InputComponent);
-          if (inputComponent) {
-            inputComponent.canJump = true;
-          }
         } else {
           transform1.position.y += overlapY;
           transform1.velocity.y = 0;
