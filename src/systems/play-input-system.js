@@ -28,6 +28,7 @@ class PlayInputSystem extends System {
       case 87:
         if (isKeyDown && !inputComponent.keys.up) {
           inputComponent.jumpPressed = true;
+          inputComponent.jumpBufferTime = inputComponent.jumpBufferDuration;
         } else if (!isKeyDown) {
           inputComponent.jumpPressed = false;
         }

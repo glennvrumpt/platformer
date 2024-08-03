@@ -11,6 +11,8 @@ class InputComponent extends Component {
     };
     this.jumpPressed = false;
     this.canJump = true;
+    this.jumpBufferTime = 0;
+    this.jumpBufferDuration = 0.1;
   }
 }
 

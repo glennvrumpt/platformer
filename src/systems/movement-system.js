@@ -30,7 +30,8 @@ class MovementSystem extends System {
           inputComponent,
           transformComponent,
           gravityComponent,
-          movementComponent
+          movementComponent,
+          deltaTime
         );
       }
 
@@ -50,7 +51,8 @@ class MovementSystem extends System {
     inputComponent,
     transformComponent,
     gravityComponent,
-    movementComponent
+    movementComponent,
+    deltaTime
   ) {
     const velocity = transformComponent.velocity;
     const { movementSpeed, jumpSpeed } = movementComponent;
@@ -64,7 +66,12 @@ class MovementSystem extends System {
       transformComponent.direction = Math.sign(velocity.x);
     }
 
-    if (gravityComponent.isOnGround) {
+    inputComponent.jumpBufferTime = Math.max(
+      0,
+      inputComponent.jumpBufferTime - deltaTime
+    );
+
+    if (inputComponent.jumpBufferTime > 0 && gravityComponent.isOnGround) {
       inputComponent.canJump = true;
     }
 
@@ -77,6 +84,7 @@ class MovementSystem extends System {
       gravityComponent.isOnGround = false;
       inputComponent.canJump = false;
       inputComponent.jumpPressed = false;
+      inputComponent.jumpBufferTime = 0;
     } else if (!inputComponent.keys.up) {
       inputComponent.jumpPressed = false;
     }
