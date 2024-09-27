@@ -22,7 +22,7 @@ class MovementSystem extends System {
       if (!transformComponent || !movementComponent) return;
 
       if (gravityComponent) {
-        this.applyGravity(gravityComponent, transformComponent);
+        this.applyGravity(gravityComponent, transformComponent, deltaTime);
       }
 
       if (inputComponent) {
@@ -39,9 +39,9 @@ class MovementSystem extends System {
     });
   }
 
-  applyGravity(gravityComponent, transformComponent) {
+  applyGravity(gravityComponent, transformComponent, deltaTime) {
     if (gravityComponent && !gravityComponent.isOnGround) {
-      transformComponent.velocity.y += gravityComponent.force;
+      transformComponent.velocity.y += gravityComponent.force * deltaTime;
     } else if (gravityComponent) {
       transformComponent.velocity.y = 0;
     }

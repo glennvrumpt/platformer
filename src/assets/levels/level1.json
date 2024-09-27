@@ -73,7 +73,7 @@
       },
       "size": { "width": 64, "height": 64 },
       "boundingBox": { "offsetX": 16, "offsetY": 8, "width": 32, "height": 56 },
-      "gravity": { "force": 9.8 },
+      "gravity": { "force": 1500 },
       "movement": { "movementSpeed": 200, "jumpSpeed": 700 },
       "animations": {
         "idle": {
