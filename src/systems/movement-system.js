@@ -40,10 +40,8 @@ class MovementSystem extends System {
   }
 
   applyGravity(gravityComponent, transformComponent, deltaTime) {
-    if (gravityComponent && !gravityComponent.isOnGround) {
+    if (gravityComponent) {
       transformComponent.velocity.y += gravityComponent.force * deltaTime;
-    } else if (gravityComponent) {
-      transformComponent.velocity.y = 0;
     }
   }
 
@@ -83,10 +81,7 @@ class MovementSystem extends System {
       velocity.y = -jumpSpeed;
       gravityComponent.isOnGround = false;
       inputComponent.canJump = false;
-      inputComponent.jumpPressed = false;
       inputComponent.jumpBufferTime = 0;
-    } else if (!inputComponent.keys.up) {
-      inputComponent.jumpPressed = false;
     }
   }
 

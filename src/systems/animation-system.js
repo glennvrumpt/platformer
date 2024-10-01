@@ -43,21 +43,25 @@ class AnimationSystem extends System {
     gravityComponent,
     deltaTime
   ) {
-    const jumpThreshold = 10;
     let newAnimation = null;
 
-    if (
+    if (gravityComponent.isOnGround && transformComponent.velocity.x === 0) {
+      newAnimation = "idle";
+    } else if (
+      gravityComponent.isOnGround &&
+      transformComponent.velocity.x !== 0
+    ) {
+      newAnimation = "run";
+    } else if (
       !gravityComponent.isOnGround &&
-      Math.abs(transformComponent.velocity.y) > jumpThreshold
+      transformComponent.velocity.y < 0
     ) {
       newAnimation = "jump";
     } else if (
-      transformComponent.velocity.x !== 0 &&
-      (inputComponent.keys.left || inputComponent.keys.right)
+      !gravityComponent.isOnGround &&
+      transformComponent.velocity.y > 0
     ) {
-      newAnimation = "run";
-    } else {
-      newAnimation = "idle";
+      newAnimation = "jump";
     }
 
     if (newAnimation !== animationComponent.currentAnimation) {
