@@ -42,7 +42,6 @@ class LevelLoader {
   createTilemap(tilemapData, tilesetPath) {
     const tileEntities = [];
     const tileSize = 32;
-    const scaledTileSize = tileSize * 1.5;
     const tileset = this.engine.assetManager.getTexture(tilesetPath);
     tilemapData.forEach((row, y) => {
       row.forEach((tile, x) => {
@@ -52,16 +51,14 @@ class LevelLoader {
             Math.floor(tile / (tileset.width / tileSize)) * tileSize;
           const entity = new Entity();
           entity.addComponent(
-            new TransformComponent(
-              new Vector2(x * scaledTileSize, y * scaledTileSize)
-            )
+            new TransformComponent(new Vector2(x * tileSize, y * tileSize))
           );
-          entity.addComponent(new Size(scaledTileSize, scaledTileSize));
+          entity.addComponent(new Size(tileSize, tileSize));
           entity.addComponent(
             new TileComponent(tileset, tileX, tileY, tileSize, tileSize)
           );
           entity.addComponent(
-            new BoundingBoxComponent(0, 0, scaledTileSize, scaledTileSize)
+            new BoundingBoxComponent(0, 0, tileSize, tileSize)
           );
           const tagComponent = new TagComponent();
           tagComponent.tags.add("tile");
@@ -105,7 +102,7 @@ class LevelLoader {
       entity.addComponent(
         new MovementComponent(
           data.movement.movementSpeed,
-          data.movement.jumpSpeed
+          data.movement.jumpHeight
         )
       );
     }

@@ -71,10 +71,10 @@
         "scale": { "x": 1, "y": 1 },
         "rotation": 0
       },
-      "size": { "width": 64, "height": 64 },
-      "boundingBox": { "offsetX": 16, "offsetY": 8, "width": 32, "height": 56 },
+      "size": { "width": 48, "height": 48 },
+      "boundingBox": { "offsetX": 10, "offsetY": 8, "width": 30, "height": 40 },
       "gravity": { "force": 1500 },
-      "movement": { "movementSpeed": 200, "jumpSpeed": 700 },
+      "movement": { "movementSpeed": 200, "jumpHeight": 600 },
       "animations": {
         "idle": {
           "texture": "player_idle",

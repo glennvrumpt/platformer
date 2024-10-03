@@ -2,6 +2,7 @@ import InputSystem from "../systems/input-system.js";
 import PlayScene from "../scenes/play-scene.js";
 import AssetManager from "./asset-manager.js";
 import SceneManager from "./scene-manager.js";
+import Camera from "./camera.js";
 
 class Engine {
   constructor() {
@@ -12,12 +13,14 @@ class Engine {
     this.inputSystem = new InputSystem(this);
     this.assetManager = new AssetManager();
     this.sceneManager = new SceneManager(this);
+    this.camera = null;
   }
 
   init() {
     this.createCanvas();
     this.context = this.canvas.getContext("2d");
     this.loadAssets();
+    this.camera = new Camera(this.canvas.width, this.canvas.height, 2000, 2000);
     this.sceneManager.changeScene("play", new PlayScene(this));
     this.run();
   }

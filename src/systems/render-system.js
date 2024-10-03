@@ -6,7 +6,7 @@ import SizeComponent from "../components/size-component.js";
 import BoundingBoxComponent from "../components/bounding-box-component.js";
 
 class RenderSystem extends System {
-  constructor(canvas, assetManager, showBoundingBoxesCallback) {
+  constructor(canvas, assetManager, showBoundingBoxesCallback, camera) {
     super();
     this.canvas = canvas;
     this.ctx = canvas.getContext("2d");
@@ -15,6 +15,7 @@ class RenderSystem extends System {
     this.backgroundTexture = this.assetManager.getTexture("background");
     this.farTexture = this.assetManager.getTexture("far");
     this.showBoundingBoxes = showBoundingBoxesCallback;
+    this.camera = camera;
   }
 
   update(entities) {
@@ -22,8 +23,25 @@ class RenderSystem extends System {
     this.ctx.fillStyle = "#2c3968";
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-    this.ctx.drawImage(this.backgroundTexture, 0, 0, 1280, 720);
-    this.ctx.drawImage(this.farTexture, 0, 50, 1280, 720);
+    this.ctx.save();
+    this.ctx.scale(this.camera.zoom, this.camera.zoom);
+    this.ctx.translate(-this.camera.position.x, -this.camera.position.y);
+
+    const bgPos = this.camera.worldToScreen(0, 0);
+    this.ctx.drawImage(
+      this.backgroundTexture,
+      bgPos.x,
+      bgPos.y,
+      this.canvas.width / this.camera.zoom,
+      this.canvas.height / this.camera.zoom
+    );
+    this.ctx.drawImage(
+      this.farTexture,
+      bgPos.x,
+      bgPos.y + 50,
+      this.canvas.width / this.camera.zoom,
+      this.canvas.height / this.camera.zoom
+    );
 
     entities.forEach((entity) => {
       const transformComponent = entity.getComponent(TransformComponent);
@@ -59,6 +77,8 @@ class RenderSystem extends System {
         this.renderBoundingBox(transformComponent, boundingBoxComponent);
       }
     });
+
+    this.ctx.restore();
   }
 
   renderTile(tileComponent, sizeComponent) {

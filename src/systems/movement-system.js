@@ -40,9 +40,7 @@ class MovementSystem extends System {
   }
 
   applyGravity(gravityComponent, transformComponent, deltaTime) {
-    if (gravityComponent) {
-      transformComponent.velocity.y += gravityComponent.force * deltaTime;
-    }
+    transformComponent.velocity.y += gravityComponent.force * deltaTime;
   }
 
   handleMovement(
@@ -53,7 +51,7 @@ class MovementSystem extends System {
     deltaTime
   ) {
     const velocity = transformComponent.velocity;
-    const { movementSpeed, jumpSpeed } = movementComponent;
+    const { movementSpeed, jumpHeight } = movementComponent;
 
     velocity.x = 0;
 
@@ -78,7 +76,7 @@ class MovementSystem extends System {
       inputComponent.canJump &&
       gravityComponent.isOnGround
     ) {
-      velocity.y = -jumpSpeed;
+      velocity.y = -jumpHeight;
       gravityComponent.isOnGround = false;
       inputComponent.canJump = false;
       inputComponent.jumpBufferTime = 0;

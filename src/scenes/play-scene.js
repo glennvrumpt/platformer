@@ -6,6 +6,7 @@ import CollisionSystem from "../systems/collision-system.js";
 import MovementSystem from "../systems/movement-system.js";
 import PlayInputSystem from "../systems/play-input-system.js";
 import LevelLoader from "../utilities/level-loader.js";
+import TagComponent from "../components/tag-component.js";
 
 class PlayScene extends Scene {
   constructor(engine) {
@@ -32,7 +33,8 @@ class PlayScene extends Scene {
       this.renderSystem = new RenderSystem(
         this.engine.canvas,
         this.engine.assetManager,
-        () => this.showBoundingBoxes
+        () => this.showBoundingBoxes,
+        this.engine.camera
       );
       this.animationSystem = new AnimationSystem(this.entityManager);
       this.collisionSystem = new CollisionSystem(this.entityManager);
@@ -40,6 +42,13 @@ class PlayScene extends Scene {
       this.playInputSystem = new PlayInputSystem(this.entityManager, this);
 
       this.entityManager.update();
+
+      const playerEntity = entities.find((entity) =>
+        entity.getComponent(TagComponent)?.tags.has("player")
+      );
+      if (playerEntity) {
+        this.engine.camera.follow(playerEntity);
+      }
 
       this.systemsInitialized = true;
     } catch (error) {
@@ -55,6 +64,7 @@ class PlayScene extends Scene {
     this.entityManager.update();
 
     if (this.systemsInitialized) {
+      this.engine.camera.update();
       this.renderSystem.update(this.entityManager.entities);
       this.animationSystem.update(deltaTime);
       this.collisionSystem.update();
