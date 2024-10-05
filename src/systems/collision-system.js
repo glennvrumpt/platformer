@@ -3,7 +3,7 @@ import TransformComponent from "../components/transform-component.js";
 import BoundingBoxComponent from "../components/bounding-box-component.js";
 import InputComponent from "../components/input-component.js";
 import TagComponent from "../components/tag-component.js";
-import GravityComponent from "../components/gravity-component.js";
+import MovementComponent from "../components/movement-component.js";
 import SpatialHashGrid from "../utilities/spatial-hash-grid.js";
 
 class CollisionSystem extends System {
@@ -52,9 +52,9 @@ class CollisionSystem extends System {
         entity.getComponent(TransformComponent) &&
         entity.getComponent(BoundingBoxComponent)
       ) {
-        const gravityComponent = entity.getComponent(GravityComponent);
-        if (gravityComponent) {
-          gravityComponent.isOnGround = false;
+        const movementComponent = entity.getComponent(MovementComponent);
+        if (movementComponent) {
+          movementComponent.isOnGround = false;
         }
         this.handleCollisionsForEntity(entity);
       }
@@ -138,9 +138,9 @@ class CollisionSystem extends System {
           transform1.position.y -= overlapY;
           transform1.velocity.y = 0;
 
-          const gravityComponent = entity1.getComponent(GravityComponent);
-          if (gravityComponent) {
-            gravityComponent.isOnGround = true;
+          const movementComponent = entity1.getComponent(MovementComponent);
+          if (movementComponent) {
+            movementComponent.isOnGround = true;
           }
         } else {
           transform1.position.y += overlapY;

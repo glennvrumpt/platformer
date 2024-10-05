@@ -1,10 +1,11 @@
 import Component from "../core/component.js";
 
 class MovementComponent extends Component {
-  constructor(movementSpeed = 200, jumpHeight = 600) {
+  constructor(movementSpeed, jumpHeight) {
     super();
     this.movementSpeed = movementSpeed;
     this.jumpHeight = jumpHeight;
+    this.isOnGround = false;
   }
 }
 

@@ -2,7 +2,7 @@ import System from "../core/system.js";
 import AnimationComponent from "../components/animation-component.js";
 import InputComponent from "../components/input-component.js";
 import TransformComponent from "../components/transform-component.js";
-import GravityComponent from "../components/gravity-component.js";
+import MovementComponent from "../components/movement-component.js";
 
 class AnimationSystem extends System {
   constructor(entityManager) {
@@ -15,20 +15,20 @@ class AnimationSystem extends System {
       const animationComponent = entity.getComponent(AnimationComponent);
       const inputComponent = entity.getComponent(InputComponent);
       const transformComponent = entity.getComponent(TransformComponent);
-      const gravityComponent = entity.getComponent(GravityComponent);
+      const movementComponent = entity.getComponent(MovementComponent);
 
       if (
         animationComponent &&
         inputComponent &&
         transformComponent &&
-        gravityComponent
+        movementComponent
       ) {
         this.updateAnimation(
           entity,
           animationComponent,
           inputComponent,
           transformComponent,
-          gravityComponent,
+          movementComponent,
           deltaTime
         );
       }
@@ -40,25 +40,25 @@ class AnimationSystem extends System {
     animationComponent,
     inputComponent,
     transformComponent,
-    gravityComponent,
+    movementComponent,
     deltaTime
   ) {
     let newAnimation = null;
 
-    if (gravityComponent.isOnGround && transformComponent.velocity.x === 0) {
+    if (movementComponent.isOnGround && transformComponent.velocity.x === 0) {
       newAnimation = "idle";
     } else if (
-      gravityComponent.isOnGround &&
+      movementComponent.isOnGround &&
       transformComponent.velocity.x !== 0
     ) {
       newAnimation = "run";
     } else if (
-      !gravityComponent.isOnGround &&
+      !movementComponent.isOnGround &&
       transformComponent.velocity.y < 0
     ) {
       newAnimation = "jump";
     } else if (
-      !gravityComponent.isOnGround &&
+      !movementComponent.isOnGround &&
       transformComponent.velocity.y > 0
     ) {
       newAnimation = "jump";

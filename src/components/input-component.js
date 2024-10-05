@@ -13,6 +13,8 @@ class InputComponent extends Component {
     this.canJump = true;
     this.jumpBufferTime = 0;
     this.jumpBufferDuration = 0.1;
+    this.coyoteTime = 0;
+    this.coyoteTimeDuration = 0.15;
   }
 }
 

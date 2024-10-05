@@ -12,7 +12,7 @@ class PlayScene extends Scene {
   constructor(engine) {
     super(engine);
     this.entityManager = new EntityManager();
-    this.levelLoader = new LevelLoader(this.engine);
+    this.levelLoader = new LevelLoader(this.engine.assetManager);
     this.systemsInitialized = false;
     this.showBoundingBoxes = false;
   }

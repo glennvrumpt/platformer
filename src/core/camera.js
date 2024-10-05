@@ -9,6 +9,7 @@ class Camera {
     this.worldHeight = worldHeight;
     this.position = new Vector2(0, 0);
     this.zoom = 1.5;
+    this.maxVerticalMovement = 100;
   }
 
   follow(entity) {
@@ -17,9 +18,18 @@ class Camera {
 
   update() {
     if (this.target) {
-      const targetPos = this.target.getComponent(TransformComponent).position;
-      this.position.x = targetPos.x - this.width / (2 * this.zoom);
-      this.position.y = targetPos.y - this.height / (2 * this.zoom);
+      const targetPosition =
+        this.target.getComponent(TransformComponent).position;
+
+      const targetX = targetPosition.x - this.width / (2 * this.zoom);
+      this.position.x += (targetX - this.position.x) * 0.1;
+
+      const targetY = targetPosition.y - this.height / (2 * this.zoom);
+      const clampedTargetY = Math.max(
+        targetY - this.maxVerticalMovement,
+        Math.min(targetY + this.maxVerticalMovement, this.position.y)
+      );
+      this.position.y += (clampedTargetY - this.position.y) * 0.05;
     }
 
     this.position.x = Math.max(
@@ -30,6 +40,10 @@ class Camera {
       0,
       Math.min(this.position.y, this.worldHeight - this.height / this.zoom)
     );
+  }
+
+  setZoom(zoomLevel) {
+    this.zoom = zoomLevel;
   }
 
   screenToWorld(screenX, screenY) {

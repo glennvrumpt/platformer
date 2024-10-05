@@ -14,15 +14,23 @@ class Engine {
     this.assetManager = new AssetManager();
     this.sceneManager = new SceneManager(this);
     this.camera = null;
+    this.assetsLoaded = false;
   }
 
   init() {
     this.createCanvas();
     this.context = this.canvas.getContext("2d");
-    this.loadAssets();
-    this.camera = new Camera(this.canvas.width, this.canvas.height, 2000, 2000);
-    this.sceneManager.changeScene("play", new PlayScene(this));
-    this.run();
+    this.loadAssets().then(() => {
+      this.assetsLoaded = true;
+      this.camera = new Camera(
+        this.canvas.width,
+        this.canvas.height,
+        2000,
+        2000
+      );
+      this.sceneManager.changeScene("play", new PlayScene(this));
+      this.run();
+    });
   }
 
   run() {
@@ -60,7 +68,7 @@ class Engine {
   }
 
   loadAssets() {
-    this.loadTextures();
+    return Promise.all([this.loadTextures()]);
   }
 
   loadTextures() {

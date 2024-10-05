@@ -29,7 +29,6 @@ class MovementSystem extends System {
         this.handleMovement(
           inputComponent,
           transformComponent,
-          gravityComponent,
           movementComponent,
           deltaTime
         );
@@ -46,7 +45,6 @@ class MovementSystem extends System {
   handleMovement(
     inputComponent,
     transformComponent,
-    gravityComponent,
     movementComponent,
     deltaTime
   ) {
@@ -67,19 +65,17 @@ class MovementSystem extends System {
       inputComponent.jumpBufferTime - deltaTime
     );
 
-    if (inputComponent.jumpBufferTime > 0 && gravityComponent.isOnGround) {
-      inputComponent.canJump = true;
+    if (!movementComponent.isOnGround) {
+      inputComponent.coyoteTime -= deltaTime;
+    } else {
+      inputComponent.coyoteTime = inputComponent.coyoteTimeDuration;
     }
 
-    if (
-      inputComponent.jumpPressed &&
-      inputComponent.canJump &&
-      gravityComponent.isOnGround
-    ) {
+    if (inputComponent.jumpBufferTime > 0 && inputComponent.coyoteTime > 0) {
       velocity.y = -jumpHeight;
-      gravityComponent.isOnGround = false;
-      inputComponent.canJump = false;
+      movementComponent.isOnGround = false;
       inputComponent.jumpBufferTime = 0;
+      inputComponent.coyoteTime = 0;
     }
   }
 

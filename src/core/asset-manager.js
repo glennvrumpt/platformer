@@ -6,10 +6,16 @@ class AssetManager {
     this.animations = new Map();
   }
 
-  addTexture(name, path) {
-    const image = new Image();
-    image.src = path;
-    this.textures.set(name, image);
+  addTexture(name, src) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        this.textures.set(name, img);
+        resolve(img);
+      };
+      img.onerror = reject;
+      img.src = src;
+    });
   }
 
   getTexture(name) {

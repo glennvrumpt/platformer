@@ -13,8 +13,8 @@ import TagComponent from "../components/tag-component.js";
 import Vector2 from "./vector2.js";
 
 class LevelLoader {
-  constructor(engine) {
-    this.engine = engine;
+  constructor(assetManager) {
+    this.assetManager = assetManager;
   }
 
   async loadLevel(path) {
@@ -42,7 +42,8 @@ class LevelLoader {
   createTilemap(tilemapData, tilesetPath) {
     const tileEntities = [];
     const tileSize = 32;
-    const tileset = this.engine.assetManager.getTexture(tilesetPath);
+    const tileset = this.assetManager.getTexture(tilesetPath);
+
     tilemapData.forEach((row, y) => {
       row.forEach((tile, x) => {
         if (tile !== -1) {
@@ -110,9 +111,7 @@ class LevelLoader {
     if (data.animations) {
       const animationComponent = new AnimationComponent();
       for (const [name, animationData] of Object.entries(data.animations)) {
-        const texture = this.engine.assetManager.getTexture(
-          animationData.texture
-        );
+        const texture = this.assetManager.getTexture(animationData.texture);
         animationComponent.animations.set(name, {
           spritesheet: texture,
           frameCount: animationData.frameCount,

@@ -16,6 +16,8 @@ class RenderSystem extends System {
     this.farTexture = this.assetManager.getTexture("far");
     this.showBoundingBoxes = showBoundingBoxesCallback;
     this.camera = camera;
+    this.scaleFactor = 2;
+    this.createPattern();
   }
 
   update(entities) {
@@ -27,21 +29,8 @@ class RenderSystem extends System {
     this.ctx.scale(this.camera.zoom, this.camera.zoom);
     this.ctx.translate(-this.camera.position.x, -this.camera.position.y);
 
-    const bgPos = this.camera.worldToScreen(0, 0);
-    this.ctx.drawImage(
-      this.backgroundTexture,
-      bgPos.x,
-      bgPos.y,
-      this.canvas.width / this.camera.zoom,
-      this.canvas.height / this.camera.zoom
-    );
-    this.ctx.drawImage(
-      this.farTexture,
-      bgPos.x,
-      bgPos.y + 50,
-      this.canvas.width / this.camera.zoom,
-      this.canvas.height / this.camera.zoom
-    );
+    this.ctx.fillStyle = this.pattern;
+    this.ctx.fillRect(0, 0, this.camera.worldWidth, this.camera.worldHeight);
 
     entities.forEach((entity) => {
       const transformComponent = entity.getComponent(TransformComponent);
@@ -79,6 +68,28 @@ class RenderSystem extends System {
     });
 
     this.ctx.restore();
+  }
+
+  createPattern() {
+    const tempCanvas = document.createElement("canvas");
+    const tempCtx = tempCanvas.getContext("2d");
+
+    tempCanvas.width = this.backgroundTexture.width * this.scaleFactor;
+    tempCanvas.height = this.backgroundTexture.height * this.scaleFactor;
+
+    tempCtx.drawImage(
+      this.backgroundTexture,
+      0,
+      0,
+      this.backgroundTexture.width,
+      this.backgroundTexture.height,
+      0,
+      0,
+      tempCanvas.width,
+      tempCanvas.height
+    );
+
+    this.pattern = this.ctx.createPattern(tempCanvas, "repeat");
   }
 
   renderTile(tileComponent, sizeComponent) {
