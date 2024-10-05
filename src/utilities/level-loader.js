@@ -52,7 +52,7 @@ class LevelLoader {
             Math.floor(tile / (tileset.width / tileSize)) * tileSize;
           const entity = new Entity();
           entity.addComponent(
-            new TransformComponent(new Vector2(x * tileSize, y * tileSize))
+            new TransformComponent(x * tileSize, y * tileSize)
           );
           entity.addComponent(new Size(tileSize, tileSize));
           entity.addComponent(
@@ -76,11 +76,10 @@ class LevelLoader {
     const entity = new Entity();
 
     if (data.transform) {
-      const { position, velocity, scale, rotation } = data.transform;
-      const pos = new Vector2(position.x, position.y);
-      const vel = new Vector2(velocity.x, velocity.y);
-      const scl = new Vector2(scale.x, scale.y);
-      entity.addComponent(new TransformComponent(pos, vel, scl, rotation));
+      const { x, y, velocityX, velocityY, pivotX, pivotY } = data.transform;
+      entity.addComponent(
+        new TransformComponent(x, y, velocityX, velocityY, pivotX, pivotY)
+      );
     }
 
     if (data.size) {

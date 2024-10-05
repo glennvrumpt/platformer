@@ -66,10 +66,12 @@
     {
       "type": "player",
       "transform": {
-        "position": { "x": 90, "y": 50 },
-        "velocity": { "x": 0, "y": 0 },
-        "scale": { "x": 1, "y": 1 },
-        "rotation": 0
+        "x": 90,
+        "y": 50,
+        "velocityX": 0,
+        "velocityY": 0,
+        "pivotX": 0.5,
+        "pivotY": 0.5
       },
       "size": { "width": 48, "height": 48 },
       "boundingBox": { "offsetX": 10, "offsetY": 8, "width": 30, "height": 40 },

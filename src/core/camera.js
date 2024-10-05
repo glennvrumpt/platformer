@@ -1,5 +1,6 @@
 import Vector2 from "../utilities/vector2.js";
 import TransformComponent from "../components/transform-component.js";
+import BoundingBoxComponent from "../components/bounding-box-component.js";
 
 class Camera {
   constructor(width, height, worldWidth, worldHeight) {
@@ -8,7 +9,9 @@ class Camera {
     this.worldWidth = worldWidth;
     this.worldHeight = worldHeight;
     this.position = new Vector2(0, 0);
-    this.zoom = 1.5;
+    this.zoom = 1;
+    this.smoothingFactor = 0.1;
+    this.target = null;
     this.maxVerticalMovement = 100;
   }
 
@@ -18,18 +21,27 @@ class Camera {
 
   update() {
     if (this.target) {
-      const targetPosition =
-        this.target.getComponent(TransformComponent).position;
+      const transform = this.target.getComponent(TransformComponent);
+      const boundingBox = this.target.getComponent(BoundingBoxComponent);
 
-      const targetX = targetPosition.x - this.width / (2 * this.zoom);
-      this.position.x += (targetX - this.position.x) * 0.1;
+      if (transform && boundingBox) {
+        const pivotWorldX =
+          transform.position.x + boundingBox.size.width * transform.pivot.x;
+        const pivotWorldY =
+          transform.position.y + boundingBox.size.height * transform.pivot.y;
 
-      const targetY = targetPosition.y - this.height / (2 * this.zoom);
-      const clampedTargetY = Math.max(
-        targetY - this.maxVerticalMovement,
-        Math.min(targetY + this.maxVerticalMovement, this.position.y)
-      );
-      this.position.y += (clampedTargetY - this.position.y) * 0.05;
+        const targetX = pivotWorldX - this.width / (2 * this.zoom);
+        const targetY = pivotWorldY - this.height / (2 * this.zoom);
+
+        const clampedTargetY = Math.max(
+          targetY - this.maxVerticalMovement,
+          Math.min(targetY + this.maxVerticalMovement, this.position.y)
+        );
+
+        this.position.x += (targetX - this.position.x) * this.smoothingFactor;
+        this.position.y +=
+          (clampedTargetY - this.position.y) * this.smoothingFactor;
+      }
     }
 
     this.position.x = Math.max(

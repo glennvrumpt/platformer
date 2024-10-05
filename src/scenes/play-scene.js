@@ -50,6 +50,8 @@ class PlayScene extends Scene {
         this.engine.camera.follow(playerEntity);
       }
 
+      this.engine.camera.setZoom(1.5);
+
       this.systemsInitialized = true;
     } catch (error) {
       console.error("Failed to load level:", error);
