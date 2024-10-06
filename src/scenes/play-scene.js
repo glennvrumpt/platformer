@@ -1,6 +1,7 @@
 import Scene from "./scene.js";
 import EntityManager from "../core/entity-manager.js";
 import RenderSystem from "../systems/render-system.js";
+import StateSystem from "../systems/state-system.js";
 import AnimationSystem from "../systems/animation-system.js";
 import CollisionSystem from "../systems/collision-system.js";
 import MovementSystem from "../systems/movement-system.js";
@@ -36,6 +37,7 @@ class PlayScene extends Scene {
         () => this.showBoundingBoxes,
         this.engine.camera
       );
+      this.stateSystem = new StateSystem(this.entityManager);
       this.animationSystem = new AnimationSystem(this.entityManager);
       this.collisionSystem = new CollisionSystem(this.entityManager);
       this.movementSystem = new MovementSystem(this.entityManager);
@@ -68,6 +70,7 @@ class PlayScene extends Scene {
     if (this.systemsInitialized) {
       this.engine.camera.update();
       this.renderSystem.update(this.entityManager.entities);
+      this.stateSystem.update();
       this.animationSystem.update(deltaTime);
       this.collisionSystem.update();
       this.movementSystem.update(deltaTime);

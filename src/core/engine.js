@@ -68,33 +68,36 @@ class Engine {
   }
 
   loadAssets() {
-    return Promise.all([this.loadTextures()]);
+    return this.loadTextures();
   }
 
   loadTextures() {
-    this.assetManager.addTexture(
-      "player_idle",
-      "../src/assets/images/Characters/Player/spritesheets/player-idle.png"
-    );
-    this.assetManager.addTexture(
-      "player_run",
-      "../src/assets/images/Characters/Player/spritesheets/player-run.png"
-    );
-    this.assetManager.addTexture(
-      "player_jump",
-      "../src/assets/images/Characters/Player/spritesheets/player-jump.png"
-    );
-    this.assetManager.addTexture(
-      "tileset",
-      "../src/assets/images/Environment/Layers/tileset.png"
-    );
-    this.assetManager.addTexture(
-      "background",
-      "../src/assets/images/Environment/Layers/back.png"
-    );
-    this.assetManager.addTexture(
-      "far",
-      "../src/assets/images/Environment/Layers/far.png"
+    const textures = [
+      {
+        key: "player_idle",
+        path: "../src/assets/images/Characters/Player/spritesheets/player-idle.png",
+      },
+      {
+        key: "player_run",
+        path: "../src/assets/images/Characters/Player/spritesheets/player-run.png",
+      },
+      {
+        key: "player_jump",
+        path: "../src/assets/images/Characters/Player/spritesheets/player-jump.png",
+      },
+      {
+        key: "tileset",
+        path: "../src/assets/images/Environment/Layers/tileset.png",
+      },
+      {
+        key: "background",
+        path: "../src/assets/images/Environment/Layers/back.png",
+      },
+      { key: "far", path: "../src/assets/images/Environment/Layers/far.png" },
+    ];
+
+    return Promise.all(
+      textures.map(({ key, path }) => this.assetManager.addTexture(key, path))
     );
   }
 }

@@ -1,8 +1,7 @@
 import System from "../core/system.js";
 import AnimationComponent from "../components/animation-component.js";
-import InputComponent from "../components/input-component.js";
+import StateComponent from "../components/state-component.js";
 import TransformComponent from "../components/transform-component.js";
-import MovementComponent from "../components/movement-component.js";
 
 class AnimationSystem extends System {
   constructor(entityManager) {
@@ -13,56 +12,31 @@ class AnimationSystem extends System {
   update(deltaTime) {
     this.entityManager.entities.forEach((entity) => {
       const animationComponent = entity.getComponent(AnimationComponent);
-      const inputComponent = entity.getComponent(InputComponent);
+      const stateComponent = entity.getComponent(StateComponent);
       const transformComponent = entity.getComponent(TransformComponent);
-      const movementComponent = entity.getComponent(MovementComponent);
 
-      if (
-        animationComponent &&
-        inputComponent &&
-        transformComponent &&
-        movementComponent
-      ) {
-        this.updateAnimation(
-          entity,
-          animationComponent,
-          inputComponent,
-          transformComponent,
-          movementComponent,
-          deltaTime
-        );
+      if (!animationComponent || !stateComponent || !transformComponent) {
+        return;
       }
+
+      this.updateAnimation(
+        entity,
+        animationComponent,
+        stateComponent,
+        transformComponent,
+        deltaTime
+      );
     });
   }
 
   updateAnimation(
     entity,
     animationComponent,
-    inputComponent,
+    stateComponent,
     transformComponent,
-    movementComponent,
     deltaTime
   ) {
-    let newAnimation = null;
-
-    if (movementComponent.isOnGround && transformComponent.velocity.x === 0) {
-      newAnimation = "idle";
-    } else if (
-      movementComponent.isOnGround &&
-      transformComponent.velocity.x !== 0
-    ) {
-      newAnimation = "run";
-    } else if (
-      !movementComponent.isOnGround &&
-      transformComponent.velocity.y < 0
-    ) {
-      newAnimation = "jump";
-    } else if (
-      !movementComponent.isOnGround &&
-      transformComponent.velocity.y > 0
-    ) {
-      newAnimation = "jump";
-    }
+    const newAnimation = stateComponent.state;
 
     if (newAnimation !== animationComponent.currentAnimation) {
       animationComponent.currentAnimation = newAnimation;

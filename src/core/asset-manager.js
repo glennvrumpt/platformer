@@ -11,7 +11,7 @@ class AssetManager {
       const img = new Image();
       img.onload = () => {
         this.textures.set(name, img);
-        resolve(img);
+        resolve();
       };
       img.onerror = reject;
       img.src = src;
