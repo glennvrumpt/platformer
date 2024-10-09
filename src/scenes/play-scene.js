@@ -76,8 +76,6 @@ class PlayScene extends Scene {
       this.movementSystem.update(deltaTime);
     }
   }
-
-  onEnd() {}
 }
 
 export default PlayScene;

@@ -10,7 +10,6 @@ import TileComponent from "../components/tile-component.js";
 import InputComponent from "../components/input-component.js";
 import StateComponent from "../components/state-component.js";
 import TagComponent from "../components/tag-component.js";
-import Vector2 from "./vector2.js";
 
 class LevelLoader {
   constructor(assetManager) {

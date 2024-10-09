@@ -36,7 +36,8 @@ class AnimationSystem extends System {
     transformComponent,
     deltaTime
   ) {
-    const newAnimation = stateComponent.state;
+    const newAnimation =
+      stateComponent.state === "fall" ? "jump" : stateComponent.state;
 
     if (newAnimation !== animationComponent.currentAnimation) {
       animationComponent.currentAnimation = newAnimation;

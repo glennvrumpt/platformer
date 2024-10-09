@@ -3,6 +3,13 @@ import StateComponent from "../components/state-component.js";
 import MovementComponent from "../components/movement-component.js";
 import TransformComponent from "../components/transform-component.js";
 
+const STATES = {
+  IDLE: "idle",
+  RUN: "run",
+  JUMP: "jump",
+  FALL: "fall",
+};
+
 class StateSystem extends System {
   constructor(entityManager) {
     super();
@@ -19,7 +26,7 @@ class StateSystem extends System {
         return;
       }
 
-      const newState = this.updateState(
+      const newState = this.determineState(
         stateComponent,
         movementComponent,
         transformComponent
@@ -31,29 +38,24 @@ class StateSystem extends System {
     });
   }
 
-  updateState(stateComponent, movementComponent, transformComponent) {
-    const STATE_IDLE = "idle";
-    const STATE_RUN = "run";
-    const STATE_JUMP = "jump";
-    const STATE_FALL = "fall";
-
+  determineState(stateComponent, movementComponent, transformComponent) {
     if (movementComponent.isOnGround && transformComponent.velocity.x === 0) {
-      return STATE_IDLE;
+      return STATES.IDLE;
     } else if (
       movementComponent.isOnGround &&
       transformComponent.velocity.x !== 0
     ) {
-      return STATE_RUN;
+      return STATES.RUN;
     } else if (
       !movementComponent.isOnGround &&
       transformComponent.velocity.y < 0
     ) {
-      return STATE_JUMP;
+      return STATES.JUMP;
     } else if (
       !movementComponent.isOnGround &&
       transformComponent.velocity.y > 0
     ) {
-      return STATE_JUMP;
+      return STATES.FALL;
     }
   }
 }

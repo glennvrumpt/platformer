@@ -56,7 +56,7 @@ class Engine {
     requestAnimationFrame((timestamp) => this.update(timestamp));
   }
 
-  stop() {
+  quit() {
     this.running = false;
   }
 

@@ -30,7 +30,7 @@ class Scene {
     this.paused = false;
   }
 
-  end() {
+  quit() {
     this.hasEnded = true;
   }
 }
